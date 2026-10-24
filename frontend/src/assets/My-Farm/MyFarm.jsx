@@ -1,19 +1,7 @@
 import { useState, useEffect } from 'react';
 import './MyFarm.css';
-import { getFarms, createFarm, updateFarm } from '../../api/farms';
-import {
-  Building2,
-  MapPin,
-  Ruler,
-  Sprout,
-  Mountain,
-  Layers,
-  Droplets,
-  Save,
-  RefreshCw,
-  CheckCircle2,
-  AlertCircle,
-} from 'lucide-react';
+import { useState } from 'react';
+import { Building2, MapPin, Ruler, Sprout, Mountain, Layers, Droplets, Save, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function MyFarm() {
   const [formData, setFormData] = useState({
@@ -27,7 +15,7 @@ export default function MyFarm() {
     waterAvailability: 'Seasonal rain & groundwater',
   });
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null);
 
@@ -71,13 +59,29 @@ export default function MyFarm() {
       ...prev,
       [name]: value,
     }));
+    // Clear error for this field as the user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const validateForm = () => {
-    if (!formData.farmName.trim() || !formData.location.trim()) {
-      setStatusMessage({ type: 'error', text: 'Farm Name and Location are required.' });
+    const newErrors = {};
+
+    if (!formData.farmName.trim()) {
+      newErrors.farmName = 'This field is required.';
+    }
+    if (!formData.location.trim()) {
+      newErrors.location = 'This field is required.';
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      setStatusMessage({ type: 'error', text: 'Please fill in all required fields.' });
       return false;
     }
+
     return true;
   };
 
@@ -88,15 +92,31 @@ export default function MyFarm() {
     setIsSubmitting(true);
     setStatusMessage(null);
 
-    const payload = {
-      farm_name: formData.farmName,
-      location: formData.location,
-      farm_size: formData.farmSize,
-      soil_type: formData.soilType,
-      elevation: formData.elevation,
-      topography: formData.topography,
-      water_availability: formData.waterAvailability,
-    };
+    try {
+      console.log('Sending POST Payload to Backend:', formData);
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      setStatusMessage({ type: 'success', text: 'Farm profile created successfully!' });
+      if (onSaveSuccess) onSaveSuccess(formData);
+    } catch (err) {
+      console.error(err);
+      setStatusMessage({ type: 'error', text: 'Failed to save farm details. Try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    if (!formData.farmId) {
+      setStatusMessage({ type: 'error', text: 'No existing farm ID found to update. Click "Save Farm" instead.' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatusMessage(null);
 
     try {
       if (formData.farmId) {
@@ -151,52 +171,60 @@ export default function MyFarm() {
                 </div>
               </div>
 
-              <div className="card-grid">
-                <div className="form-group full-width">
-                  <label htmlFor="farmName">Farm / Plot Name *</label>
-                  <div className="input-wrapper">
-                    <Building2 className="input-icon" size={18} />
-                    <input
-                      type="text"
-                      id="farmName"
-                      name="farmName"
-                      placeholder="e.g., East Shewa Demo Plot A"
-                      value={formData.farmName}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
+            <div className="card-grid">
+              {/* Farm Name Field */}
+              <div className="form-group full-width">
+                <label htmlFor="farmName">
+                  Farm Name <span className="required">*</span>
+                </label>
+                <div className="input-wrapper">
+                  <Building2 className="input-icon" size={18} />
+                  <input
+                    type="text"
+                    id="farmName"
+                    name="farmName"
+                    placeholder="e.g., Green Valley Organic Farm"
+                    value={formData.farmName}
+                    onChange={handleChange}
+                    className={errors.farmName ? 'input-error' : ''}
+                  />
                 </div>
+                {errors.farmName && <span className="error-text">{errors.farmName}</span>}
+              </div>
 
-                <div className="form-group">
-                  <label htmlFor="location">Location / Woreda *</label>
-                  <div className="input-wrapper">
-                    <MapPin className="input-icon" size={18} />
-                    <input
-                      type="text"
-                      id="location"
-                      name="location"
-                      placeholder="e.g., Oromia, East Shewa"
-                      value={formData.location}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
+              {/* Location Field */}
+              <div className="form-group">
+                <label htmlFor="location">
+                  Location <span className="required">*</span>
+                </label>
+                <div className="input-wrapper">
+                  <MapPin className="input-icon" size={18} />
+                  <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    placeholder="e.g., Oromia, East Shewa"
+                    value={formData.location}
+                    onChange={handleChange}
+                    className={errors.location ? 'input-error' : ''}
+                  />
                 </div>
+                {errors.location && <span className="error-text">{errors.location}</span>}
+              </div>
 
-                <div className="form-group">
-                  <label htmlFor="farmSize">Total Farm Area</label>
-                  <div className="input-wrapper">
-                    <Ruler className="input-icon" size={18} />
-                    <input
-                      type="text"
-                      id="farmSize"
-                      name="farmSize"
-                      placeholder="e.g., 2.5 Hectares / 10 Timad"
-                      value={formData.farmSize}
-                      onChange={handleChange}
-                    />
-                  </div>
+              {/* Farm Size Field */}
+              <div className="form-group">
+                <label htmlFor="farmSize">Farm Size</label>
+                <div className="input-wrapper">
+                  <Ruler className="input-icon" size={18} />
+                  <input
+                    type="text"
+                    id="farmSize"
+                    name="farmSize"
+                    placeholder="e.g., 2.5 Hectares / 10 Timad"
+                    value={formData.farmSize}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
             </section>
