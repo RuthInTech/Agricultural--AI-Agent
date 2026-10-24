@@ -8,14 +8,13 @@ const SproutIcon = () => (
   </svg>
 );
 
-
-export default function Header(currentLang, setLanguage, onVoiceClick){
+export default function Header({ currentLang, onVoiceClick }){
 
     const [isRecording, setIsRecording] = useState(false);
 
     const handleMicToogle = () => {
         setIsRecording(!isRecording);
-        if (onVoiceClick) onVoiceClick;
+        if (onVoiceClick) onVoiceClick();
     };
 
     const [isDahboardOpen, setIsDashboardOpen] = useState(false);
@@ -31,21 +30,23 @@ export default function Header(currentLang, setLanguage, onVoiceClick){
                     <button onClick={toggleDashboard} className='menu-toggle-btn' title='Open Dashboard' aria-label='Toggle Navigation'>
                         <Menu size={24} strokeWidth={2.2}/>
                     </button>
-                    <div className='brand-icon'>                    
-                        <SproutIcon/>
-                    </div>
-                    <div>
-                        <span className='brand-title'>AgriVox</span>
-                        <span className='brand-subtitle'>AGRI-INTELLIGENCE ECOSYSTEM</span>
+                    <div className='brand-logo-group'>
+                        <div className='brand-icon'>                    
+                            <SproutIcon/>
+                        </div>
+                        <div>
+                            <span className='brand-title'>AgriVox</span>
+                            <span className='brand-subtitle'>AGRI-INTELLIGENCE ECOSYSTEM</span>
+                        </div>
                     </div>
                 </div>
 
-                <div className='search-telemtry-container'>
+                <div className='search-telemetry-container'>
                     <div className='search-wrapper'>
                         <input
-                        type='text'
-                        placeholder={currentLang === 'am' ? "የገበያ ዋጋ ወይም አየር ሁኔታ ይጠይቁ..." : "Search Prices, Weather, Advisories..."}
-                        className='search-input'
+                            type='text'
+                            placeholder={currentLang === 'am' ? "የገበያ ዋጋ ወይም አየር ሁኔታ ይጠይቁ..." : "Search Prices, Weather, Advisories..."}
+                            className='search-input'
                         />
                         <button onClick={handleMicToogle} className={`mic-btn ${isRecording ? 'recording' : 'idle'}`} title='Voice Input'>
                             <Mic size={20} strokeWidth={2.5}/>
@@ -53,19 +54,9 @@ export default function Header(currentLang, setLanguage, onVoiceClick){
                     </div>
                 </div>
 
-                <div className='controls-wrapper'>
-                    <div className='lang-switcher'>
-                        <button onClick={() => setLanguage('am')} className={`lang-btn ${currentLang === 'am' ? 'active' : 'inactive'}`}>
-                            አማርኛ
-                        </button>
-                        <button onClick={() => setLanguage('en')} className={`lang-btn ${currentLang === 'en' ? 'active' : 'inactive'}`}>
-                            English
-                        </button>
-                    </div>
-                </div>
+                <div className="header-right-spacer"></div>
             </div>
             <Dashboard isOpen={isDahboardOpen} onClose={toggleDashboard}/>
         </header>
-        
     );
 }

@@ -36,10 +36,10 @@ export default function Homepage(){
           <span className="suggested-title">SUGGESTED QUESTIONS</span>
           <div className="chips-wrapper">
             <button className="chip-btn">
-              💬 "የዛሬ የጤፍ ዋጋ ስንት ነው?"
+              "የዛሬ የጤፍ ዋጋ ስንት ነው?"
             </button>
             <button className="chip-btn">
-              🌧️ "በሚቀጥሉት 3 ቀናት ዝናብ አለ?"
+              "በሚቀጥሉት 3 ቀናት ዝናብ አለ?"
             </button>
           </div>
         </div>
