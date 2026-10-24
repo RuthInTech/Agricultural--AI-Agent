@@ -39,13 +39,17 @@ export default function App() {
         }
       >
         <Route path="/Home" element={<HomePage />} />
+        <Route path="/Dashboard" element={<HomePage />} />
         <Route path="/Weather" element={<Weather />} />
         <Route path="/Recommendations" element={<FarmerReportForm />} />
+        <Route path="/NewReport" element={<FarmerReportForm />} />
         <Route path="/CaseHistory" element={<CasesPage />} />
+        <Route path="/Cases" element={<CasesPage />} />
         <Route path="/Guidance" element={<GuidancePage />} />
         <Route path="/SavedRecords" element={<SavedAdvisoriesPage />} />
         <Route path="/MyFarm" element={<MyFarm />} />
         <Route path="/Profile" element={<Profile />} />
+        <Route path="/Settings" element={<Profile />} />
       </Route>
 
       {/* Fallback */}

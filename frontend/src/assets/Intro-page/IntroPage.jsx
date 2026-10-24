@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Sprout,
+  Leaf,
   ShieldCheck,
   CloudSun,
   FileText,
@@ -12,8 +13,6 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronUp,
-  Layers,
-  Activity,
   MapPin,
   Calendar,
   Lock,
@@ -26,9 +25,7 @@ import {
   Droplets,
   BookOpen,
   UserCheck,
-  HelpCircle,
-  Eye,
-  Check
+  Check,
 } from 'lucide-react';
 import '../css-files/intro-page.css';
 
@@ -38,6 +35,12 @@ export default function IntroPage() {
   const [selectedDemo, setSelectedDemo] = useState('GUIDE-001');
   const [activeFeatureTab, setActiveFeatureTab] = useState('agent');
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
+
+  // Strict Credential Guard:
+  // Every entry button on the landing page requires credentials before accessing the web app.
+  const handleRequireCredentials = (targetPath = '/Recommendations') => {
+    navigate('/Login', { state: { from: { pathname: targetPath } } });
+  };
 
   // Demo simulator scenarios
   const demoScenarios = {
@@ -142,9 +145,9 @@ export default function IntroPage() {
 
           <div className="agri-nav-actions">
             <button className="agri-btn-outline" onClick={() => navigate('/Login')}>
-              Sign In
+              <Lock size={15} /> Sign In
             </button>
-            <button className="agri-btn-primary" onClick={() => navigate('/Recommendations')}>
+            <button className="agri-btn-primary" onClick={() => handleRequireCredentials('/Recommendations')}>
               Launch Agent <ArrowRight size={16} />
             </button>
           </div>
@@ -170,14 +173,15 @@ export default function IntroPage() {
             </nav>
             <div className="agri-mobile-actions">
               <button className="agri-btn-outline w-full" onClick={() => navigate('/Login')}>
-                Sign In
+                <Lock size={15} /> Sign In with Credentials
               </button>
-              <button className="agri-btn-primary w-full" onClick={() => navigate('/Recommendations')}>
+              <button className="agri-btn-primary w-full" onClick={() => handleRequireCredentials('/Recommendations')}>
                 Launch Extension Agent <ArrowRight size={16} />
               </button>
             </div>
           </div>
         )}
+
       </header>
 
       {/* Hero Section */}
@@ -197,13 +201,13 @@ export default function IntroPage() {
           </p>
 
           <div className="agri-hero-cta-group">
-            <button className="agri-btn-hero-primary" onClick={() => navigate('/Recommendations')}>
+            <button className="agri-btn-hero-primary" onClick={() => handleRequireCredentials('/Recommendations')}>
               Start New Crop Report <ArrowRight size={18} />
             </button>
-            <button className="agri-btn-hero-secondary" onClick={() => navigate('/Weather')}>
+            <button className="agri-btn-hero-secondary" onClick={() => handleRequireCredentials('/Weather')}>
               <CloudSun size={18} /> Live Weather Telemetry
             </button>
-            <button className="agri-btn-hero-tertiary" onClick={() => navigate('/CaseHistory')}>
+            <button className="agri-btn-hero-tertiary" onClick={() => handleRequireCredentials('/CaseHistory')}>
               <BookOpen size={18} /> Previous Cases
             </button>
           </div>
@@ -438,9 +442,9 @@ export default function IntroPage() {
             <div className="agri-sim-cta">
               <button
                 className="agri-btn-primary"
-                onClick={() => navigate('/Recommendations')}
+                onClick={() => handleRequireCredentials('/Recommendations')}
               >
-                Run This Test Case in Extension Portal <ArrowRight size={16} />
+                <Lock size={15} /> Run This Test Case in Extension Portal <ArrowRight size={16} />
               </button>
             </div>
           </div>
@@ -498,8 +502,8 @@ export default function IntroPage() {
                   <li><CheckCircle2 size={18} className="text-green" /> Clearly delineates physical observations from hypothetical explanations.</li>
                   <li><CheckCircle2 size={18} className="text-green" /> Refuses to invent chemical prescriptions or unsupported pesticide dosages.</li>
                 </ul>
-                <button className="agri-btn-outline" onClick={() => navigate('/Guidance')}>
-                  Search Guidance Library <ArrowRight size={16} />
+                <button className="agri-btn-outline" onClick={() => handleRequireCredentials('/Guidance')}>
+                  <Lock size={15} /> Search Guidance Library <ArrowRight size={16} />
                 </button>
               </div>
               <div className="agri-feat-card-mock">
@@ -534,8 +538,8 @@ export default function IntroPage() {
                   <li><CheckCircle2 size={18} className="text-green" /> Evapotranspiration and high-temperature stress alerts for maize tasseling.</li>
                   <li><CheckCircle2 size={18} className="text-green" /> Fungal leaf disease risk assessment when humidity stays above 80%.</li>
                 </ul>
-                <button className="agri-btn-outline" onClick={() => navigate('/Weather')}>
-                  Open Weather Radar <ArrowRight size={16} />
+                <button className="agri-btn-outline" onClick={() => handleRequireCredentials('/Weather')}>
+                  <Lock size={15} /> Open Weather Radar <ArrowRight size={16} />
                 </button>
               </div>
               <div className="agri-feat-card-mock weather">
@@ -572,8 +576,8 @@ export default function IntroPage() {
                   <li><CheckCircle2 size={18} className="text-green" /> Timestamped follow-up action items with status tracking.</li>
                   <li><CheckCircle2 size={18} className="text-green" /> Detailed audit history ensuring diagnostic decisions can be inspected later.</li>
                 </ul>
-                <button className="agri-btn-outline" onClick={() => navigate('/SavedRecords')}>
-                  View Saved Advisories <ArrowRight size={16} />
+                <button className="agri-btn-outline" onClick={() => handleRequireCredentials('/SavedRecords')}>
+                  <Lock size={15} /> View Saved Advisories <ArrowRight size={16} />
                 </button>
               </div>
               <div className="agri-feat-card-mock">
@@ -741,11 +745,11 @@ export default function IntroPage() {
             Experience evidence-referenced agricultural extension support powered by verified research, local case history, and live weather telemetry.
           </p>
           <div className="agri-cta-actions">
-            <button className="agri-btn-hero-primary" onClick={() => navigate('/Recommendations')}>
-              Start New Maize Crop Report <ArrowRight size={18} />
+            <button className="agri-btn-hero-primary" onClick={() => handleRequireCredentials('/Recommendations')}>
+              <Lock size={16} /> Sign In &amp; Start Crop Report <ArrowRight size={18} />
             </button>
             <button className="agri-btn-hero-secondary" onClick={() => navigate('/Login')}>
-              Sign In to Extension Portal
+              Portal Credentials Sign In
             </button>
           </div>
         </div>
@@ -788,17 +792,27 @@ export default function IntroPage() {
 
           <div className="agri-footer-column">
             <h5>Access Portal</h5>
-            <button className="footer-link-btn" onClick={() => navigate('/Recommendations')}>New Crop Report</button>
-            <button className="footer-link-btn" onClick={() => navigate('/CaseHistory')}>Previous Cases</button>
-            <button className="footer-link-btn" onClick={() => navigate('/Guidance')}>Guidance Library</button>
-            <button className="footer-link-btn" onClick={() => navigate('/SavedRecords')}>Saved Advisories</button>
-            <button className="footer-link-btn" onClick={() => navigate('/Login')}>Sign In</button>
+            <button className="footer-link-btn" onClick={() => handleRequireCredentials('/Recommendations')}>
+              <Lock size={12} /> New Crop Report
+            </button>
+            <button className="footer-link-btn" onClick={() => handleRequireCredentials('/CaseHistory')}>
+              <Lock size={12} /> Previous Cases
+            </button>
+            <button className="footer-link-btn" onClick={() => handleRequireCredentials('/Guidance')}>
+              <Lock size={12} /> Guidance Library
+            </button>
+            <button className="footer-link-btn" onClick={() => handleRequireCredentials('/SavedRecords')}>
+              <Lock size={12} /> Saved Advisories
+            </button>
+            <button className="footer-link-btn" onClick={() => navigate('/Login')}>
+              <Lock size={12} /> Sign In
+            </button>
           </div>
         </div>
 
         <div className="agri-footer-bottom">
           <p>© 2026 AgriGuide — AI Agricultural Extension Agent. Demonstration and educational use.</p>
-          <p>Compliant with Hackathon Free-Tier & Agricultural Safety Standards.</p>
+          <p>Compliant with Hackathon Free-Tier &amp; Agricultural Safety Standards.</p>
         </div>
       </footer>
     </div>

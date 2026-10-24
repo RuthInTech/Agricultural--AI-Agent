@@ -1,180 +1,205 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-  BookOpen,
-  ClipboardList,
+  LayoutDashboard,
   CloudSun,
-  Cog,
-  LayoutDashboard as DashboardIcon,
-  History as FolderHistory,
+  ClipboardList,
+  History,
+  BookOpen,
+  BookmarkCheck,
+  Building2,
+  UserCircle,
   LogOut,
-  MapPin,
   Menu,
-  Mountain,
-  ShoppingBasket,
-  Sprout,
-  User,
   X,
+  ShieldCheck,
+  Sprout,
 } from 'lucide-react';
+import './AppShell.css';
+import { getStoredUser, logoutUser } from '../api/auth';
+import { getWeather } from '../api/weather';
 
-// Decode the JWT (the user's own access token) purely to show a display name.
-// No secret is stored client-side; the payload is not signed data we trust for
-// authorization — the backend still enforces auth on every protected call.
-function userFromToken() {
-  try {
-    const token = localStorage.getItem('access_token');
-    if (!token) return null;
-    const payload = token.split('.')[1];
-    const json = decodeURIComponent(
-      atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join(''),
-    );
-    const data = JSON.parse(json);
-    return {
-      username: data.username || data.name || data.email || 'User',
-      email: data.email || '',
-    };
-  } catch {
-    return null;
-  }
-}
-
-const PRIMARY_NAV = [
-  { to: '/Home', label: 'Dashboard', icon: DashboardIcon },
-  { to: '/Recommendations', label: 'New Crop Assessment', icon: ClipboardList },
-  { to: '/CaseHistory', label: 'Case History', icon: FolderHistory },
+const NAV_ITEMS = [
+  { to: '/Home', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/Weather', label: 'Local Weather', icon: CloudSun },
+  { to: '/Recommendations', label: 'New Crop Report', icon: ClipboardList },
+  { to: '/CaseHistory', label: 'Previous Cases', icon: History },
   { to: '/Guidance', label: 'Guidance Library', icon: BookOpen },
-  { to: '/SavedRecords', label: 'Saved Advisories', icon: Sprout },
-  { to: '/Settings', label: 'Settings', icon: Cog },
-];
-
-const SECONDARY_NAV = [
-  { to: '/MyFarm', label: 'My Farm', icon: Mountain },
-  { to: '/Weather', label: 'Weather', icon: CloudSun },
-  { to: '/MarketPlace', label: 'Marketplace', icon: ShoppingBasket },
-  { to: '/Profile', label: 'Profile', icon: User },
+  { to: '/SavedRecords', label: 'Saved Advisories', icon: BookmarkCheck },
+  { to: '/MyFarm', label: 'My Farm Profile', icon: Building2 },
+  { to: '/Profile', label: 'Profile & Settings', icon: UserCircle },
 ];
 
 export default function AppShell() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [quickWeather, setQuickWeather] = useState(null);
 
   useEffect(() => {
-    setUser(userFromToken());
+    setCurrentUser(getStoredUser());
   }, []);
 
-  // Close the mobile drawer whenever the route changes.
+  // Fetch quick weather indicator on mount
   useEffect(() => {
-    setDrawerOpen(false);
+    let active = true;
+    getWeather('Addis Ababa')
+      .then((data) => {
+        if (active && data?.current) {
+          setQuickWeather({
+            temp: data.current.temperature,
+            condition: data.current.condition,
+            icon: data.current.icon,
+            location: data.location?.split(',')[0] || 'Addis Ababa',
+          });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Close mobile drawer on route navigation
+  useEffect(() => {
+    setIsSidebarOpen(false);
   }, [location.pathname]);
 
   const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    logoutUser();
     navigate('/Login', { replace: true });
   };
 
-  const initials = (user?.username || 'U')
+  const getPageTitle = () => {
+    const item = NAV_ITEMS.find((nav) => nav.to === location.pathname);
+    if (item) return item.label;
+    if (location.pathname === '/Dashboard') return 'Dashboard';
+    if (location.pathname === '/Settings') return 'Profile & Settings';
+    return 'AgriGuide';
+  };
+
+  const displayName = currentUser?.first_name
+    ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim()
+    : currentUser?.username || 'Signed In';
+  const displayRole = currentUser?.email || 'Extension Agent';
+  const avatarInitials = (displayName || 'AG')
     .split(/[\s@._-]+/)
     .filter(Boolean)
     .slice(0, 2)
-    .map((part) => part[0].toUpperCase())
+    .map((s) => s[0].toUpperCase())
     .join('');
 
   return (
-    <div className="app-shell">
+    <div className="ag-shell">
+      {/* Mobile Drawer Scrim */}
       <div
-        className={`app-sidebar__scrim ${drawerOpen ? 'is-visible' : ''}`}
-        onClick={() => setDrawerOpen(false)}
+        className={`ag-sidebar__scrim ${isSidebarOpen ? 'is-visible' : ''}`}
+        onClick={() => setIsSidebarOpen(false)}
         aria-hidden="true"
       />
 
-      <aside className={`app-sidebar ${drawerOpen ? 'is-open' : ''}`} aria-label="Primary navigation">
-        <div className="app-brand">
-          <span className="app-brand__mark" aria-hidden="true">
-            <Sprout size={20} />
-          </span>
+      {/* Sidebar Navigation */}
+      <aside className={`ag-sidebar ${isSidebarOpen ? 'is-open' : ''}`} aria-label="Main Navigation">
+        <div className="ag-sidebar__brand">
+          <div className="ag-brand__icon" aria-hidden="true">
+            <Sprout size={24} />
+          </div>
           <div>
-            <div className="app-brand__name">AgriGuide</div>
-            <div className="app-brand__tag">Extension Agent</div>
+            <div className="ag-brand__name">AgriGuide</div>
+            <div className="ag-brand__tag">Extension Agent</div>
           </div>
           <button
             type="button"
-            className="app-topbar__menu"
-            style={{ display: 'inline-flex', marginLeft: 'auto' }}
-            onClick={() => setDrawerOpen(false)}
+            className="ag-sidebar__close"
+            onClick={() => setIsSidebarOpen(false)}
             aria-label="Close navigation"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
 
-        <nav className="app-nav">
-          <div className="app-nav__label">Workflow</div>
-          {PRIMARY_NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) => `app-nav__link ${isActive ? 'is-active' : ''}`}
-            >
-              <item.icon size={18} />
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
+        <nav className="ag-sidebar__nav">
+          <span className="ag-nav__label">Workflow & Advisory</span>
+          {NAV_ITEMS.slice(0, 6).map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) => `ag-nav__link ${isActive ? 'is-active' : ''}`}
+              >
+                <IconComponent size={19} />
+                <span>{item.label}</span>
+              </NavLink>
+            );
+          })}
 
-          <div className="app-nav__label">More</div>
-          {SECONDARY_NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) => `app-nav__link ${isActive ? 'is-active' : ''}`}
-            >
-              <item.icon size={18} />
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
+          <span className="ag-nav__label" style={{ marginTop: '10px' }}>
+            Account & Operations
+          </span>
+          {NAV_ITEMS.slice(6).map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) => `ag-nav__link ${isActive ? 'is-active' : ''}`}
+              >
+                <IconComponent size={19} />
+                <span>{item.label}</span>
+              </NavLink>
+            );
+          })}
         </nav>
 
-        <div className="app-sidebar__footer">
-          <div className="app-usercard">
-            <span className="app-usercard__avatar" aria-hidden="true">
-              {initials}
-            </span>
-            <span className="app-usercard__meta">
-              <span className="app-usercard__name">{user?.username || 'Signed in'}</span>
-              <span className="app-usercard__role">{user?.email || 'Extension worker'}</span>
-            </span>
+        <div className="ag-sidebar__footer">
+          <div className="ag-usercard">
+            <div className="ag-usercard__avatar">{avatarInitials}</div>
+            <div className="ag-usercard__meta">
+              <span className="ag-usercard__name">{displayName}</span>
+              <span className="ag-usercard__role">{displayRole}</span>
+            </div>
           </div>
-          <button type="button" className="app-logout" onClick={handleLogout}>
-            <LogOut size={16} /> Log out
+          <button type="button" className="ag-logout-btn" onClick={handleLogout}>
+            <LogOut size={15} />
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>
 
-      <div className="app-main">
-        <header className="app-topbar">
+      {/* Main Page Area */}
+      <div className="ag-main">
+        <header className="ag-topbar">
           <button
             type="button"
-            className="app-topbar__menu"
-            onClick={() => setDrawerOpen(true)}
-            aria-label="Open navigation"
+            className="ag-topbar__menu"
+            onClick={() => setIsSidebarOpen(true)}
+            aria-label="Open navigation menu"
           >
-            <Menu size={20} />
+            <Menu size={22} />
           </button>
-          <span className="app-topbar__title">AgriGuide</span>
-          <span className="app-topbar__spacer" />
-          <span className="badge badge--success" title="Connected to the Django backend">
-            <MapPin size={12} /> Evidence-backed
-          </span>
+
+          <span className="ag-topbar__title">{getPageTitle()}</span>
+
+          <div className="ag-topbar__spacer" />
+
+          <div className="ag-topbar__badges">
+            {quickWeather && (
+              <NavLink to="/Weather" className="ag-pill ag-pill--weather" title="View live weather forecast">
+                <span>{quickWeather.icon}</span>
+                <span>{quickWeather.temp}</span>
+                <span style={{ opacity: 0.8 }}>({quickWeather.location})</span>
+              </NavLink>
+            )}
+            <span className="ag-pill ag-pill--success" title="Backed by retrieved official agricultural guidance">
+              <ShieldCheck size={14} />
+              <span>Evidence-Backed</span>
+            </span>
+          </div>
         </header>
 
-        <main className="app-content">
+        <main className="ag-content">
           <Outlet />
         </main>
       </div>

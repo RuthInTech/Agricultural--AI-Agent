@@ -29,10 +29,10 @@ API.interceptors.request.use(
 API.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Only wipe token on explicit auth verification endpoints
     if (error.response?.status === 401) {
       const url = error.config?.url || '';
-      if (!url.includes('/auth/login') && !url.includes('/auth/register')) {
-        // Clear stale session
+      if (url.includes('/auth/me/') || url.includes('/auth/verify/')) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('token');
         localStorage.removeItem('user');
