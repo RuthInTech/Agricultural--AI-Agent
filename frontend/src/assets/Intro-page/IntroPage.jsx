@@ -236,63 +236,99 @@ export default function IntroPage() {
           </div>
         )}
 
-        {/* Flowing Crop Maturation Stream (Integrated in sticky header, zero overlay on page content) */}
-        <div className="agri-maturation-stream" aria-label="Crop Maturation Flow">
-          <div className="agri-maturation-inner">
-            <div className="agri-maturation-flow">
-              {/* Background Vine Path */}
-              <div className="agri-maturation-track">
-                {/* Flowing Gradient Stem */}
-                <div
-                  className="agri-maturation-fill"
-                  style={{ width: `${Math.round(scrollProgress * 100)}%` }}
-                >
-                  <span className="agri-stream-shimmer" />
-                </div>
+        {/* Sleek hairline progress indicator at bottom of navbar */}
+        <div
+          className="agri-nav-scroll-indicator"
+          style={{ width: `${Math.round(scrollProgress * 100)}%` }}
+        />
+      </header>
 
-                {/* Flowing Sprout / Maturing Head */}
-                <div
-                  className="agri-stream-pointer"
-                  style={{ left: `${Math.round(scrollProgress * 100)}%` }}
-                >
-                  <div className="agri-stream-sprout" style={{ backgroundColor: currentGrowthStage.color }}>
-                    <StageIcon size={14} className="agri-stream-sprout-icon" />
-                  </div>
-                </div>
+      {/* ------------------------------------------------------------------ */}
+      {/* Vertical Crop Maturation Companion (Flows visibly alongside scroll) */}
+      {/* ------------------------------------------------------------------ */}
+      <aside
+        className="agri-plant-vertical-companion"
+        aria-label="Crop Maturation Vertical Scroll Tracker"
+      >
+        <div className="agri-vertical-vine-track">
+          {/* Vertical Vine Fill */}
+          <div
+            className="agri-vertical-vine-fill"
+            style={{ height: `${Math.round(scrollProgress * 100)}%` }}
+          >
+            <span className="agri-vertical-sap-shimmer" />
+          </div>
 
-                {/* Maturation Stage Checkpoints */}
-                <div className="agri-maturation-checkpoints">
-                  <div className={`agri-checkpoint ${scrollProgress >= 0.02 ? 'passed' : ''} ${scrollProgress < 0.28 ? 'active-stage' : ''}`}>
-                    <span className="agri-checkpoint-node">🌱</span>
-                    <span className="agri-checkpoint-label">1. Seedling</span>
-                  </div>
-                  <div className={`agri-checkpoint ${scrollProgress >= 0.28 ? 'passed' : ''} ${scrollProgress >= 0.28 && scrollProgress < 0.58 ? 'active-stage' : ''}`}>
-                    <span className="agri-checkpoint-node">🌿</span>
-                    <span className="agri-checkpoint-label">2. Whorl</span>
-                  </div>
-                  <div className={`agri-checkpoint ${scrollProgress >= 0.58 ? 'passed' : ''} ${scrollProgress >= 0.58 && scrollProgress < 0.85 ? 'active-stage' : ''}`}>
-                    <span className="agri-checkpoint-node">🌾</span>
-                    <span className="agri-checkpoint-label">3. Tasseling</span>
-                  </div>
-                  <div className={`agri-checkpoint ${scrollProgress >= 0.85 ? 'passed' : ''} ${scrollProgress >= 0.85 ? 'active-stage' : ''}`}>
-                    <span className="agri-checkpoint-node">🌽</span>
-                    <span className="agri-checkpoint-label">4. Harvest</span>
-                  </div>
-                </div>
-              </div>
+          {/* Milestone 1: Seedling Emergence */}
+          <div
+            className={`agri-vertical-node node-1 ${scrollProgress >= 0.02 ? 'passed' : ''} ${scrollProgress < 0.28 ? 'active-stage' : ''}`}
+            title="Stage 1: Seedling Emergence (VE - V2)"
+          >
+            <span className="agri-vertical-node-emoji">🌱</span>
+            <div className="agri-vertical-node-tag">
+              <span className="agri-node-stage">1. Seedling</span>
+            </div>
+          </div>
+
+          {/* Milestone 2: Vegetative Whorl */}
+          <div
+            className={`agri-vertical-node node-2 ${scrollProgress >= 0.28 ? 'passed' : ''} ${scrollProgress >= 0.28 && scrollProgress < 0.58 ? 'active-stage' : ''}`}
+            title="Stage 2: Vegetative Whorl (V6 - V12)"
+          >
+            <span className="agri-vertical-node-emoji">🌿</span>
+            <div className="agri-vertical-node-tag">
+              <span className="agri-node-stage">2. Whorl</span>
+            </div>
+          </div>
+
+          {/* Milestone 3: Tasseling & Silking */}
+          <div
+            className={`agri-vertical-node node-3 ${scrollProgress >= 0.58 ? 'passed' : ''} ${scrollProgress >= 0.58 && scrollProgress < 0.85 ? 'active-stage' : ''}`}
+            title="Stage 3: Tasseling & Silking (VT - R1)"
+          >
+            <span className="agri-vertical-node-emoji">🌾</span>
+            <div className="agri-vertical-node-tag">
+              <span className="agri-node-stage">3. Tasseling</span>
+            </div>
+          </div>
+
+          {/* Milestone 4: Mature Harvest */}
+          <div
+            className={`agri-vertical-node node-4 ${scrollProgress >= 0.85 ? 'passed' : ''} ${scrollProgress >= 0.85 ? 'active-stage' : ''}`}
+            title="Stage 4: Mature Harvest (R4 - R6)"
+          >
+            <span className="agri-vertical-node-emoji">🌽</span>
+            <div className="agri-vertical-node-tag">
+              <span className="agri-node-stage">4. Harvest</span>
+            </div>
+          </div>
+
+          {/* Dynamic Sprout Head Traveling Down the Stalk */}
+          <div
+            className="agri-vertical-sprout-head"
+            style={{
+              top: `${Math.min(96, Math.max(4, scrollProgress * 100))}%`,
+            }}
+          >
+            <div
+              className="agri-vertical-sprout-avatar"
+              style={{
+                backgroundColor: currentGrowthStage.color,
+                boxShadow: `0 0 12px ${currentGrowthStage.color}88`,
+              }}
+            >
+              <StageIcon size={14} className="agri-vertical-sprout-icon" />
             </div>
 
-            {/* Active Phase Badge */}
-            <div className="agri-maturation-badge">
-              <span className="agri-badge-indicator" style={{ backgroundColor: currentGrowthStage.color }} />
-              <span className="agri-badge-text" style={{ color: currentGrowthStage.color }}>
-                {currentGrowthStage.stage}
-              </span>
-              <span className="agri-badge-percent">{Math.round(scrollProgress * 100)}%</span>
+            {/* Dynamic Stage Pill */}
+            <div className="agri-vertical-stage-pill">
+              <span className="agri-pill-dot" style={{ backgroundColor: currentGrowthStage.color }} />
+              <span className="agri-pill-text">{currentGrowthStage.stage}</span>
+              <span className="agri-pill-percent">{Math.round(scrollProgress * 100)}%</span>
             </div>
           </div>
         </div>
-      </header>
+      </aside>
 
       {/* Hero Section */}
       <section id="hero" className="agri-hero-section">
