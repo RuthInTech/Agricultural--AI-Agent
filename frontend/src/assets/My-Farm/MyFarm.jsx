@@ -1,6 +1,19 @@
 import { useState, useEffect } from 'react';
 import './MyFarm.css';
-import { Building2, MapPin, Ruler, Sprout, Mountain, Layers, Droplets, Save, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
+import { getFarms, createFarm, updateFarm } from '../../api/farms';
+import {
+  Building2,
+  MapPin,
+  Ruler,
+  Sprout,
+  Mountain,
+  Layers,
+  Droplets,
+  Save,
+  RefreshCw,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
 
 export default function MyFarm() {
   const [formData, setFormData] = useState({
@@ -15,6 +28,7 @@ export default function MyFarm() {
   });
 
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null);
 
@@ -41,7 +55,7 @@ export default function MyFarm() {
         }
       })
       .catch((err) => {
-        console.warn('Could not load farm profile:', err);
+        console.warn('Could not load farm profile from backend:', err);
       })
       .finally(() => {
         if (active) setIsLoading(false);
@@ -54,11 +68,7 @@ export default function MyFarm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // Clear error for this field as the user types
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
@@ -66,22 +76,14 @@ export default function MyFarm() {
 
   const validateForm = () => {
     const newErrors = {};
-
     if (!formData.farmName.trim()) {
-      newErrors.farmName = 'This field is required.';
+      newErrors.farmName = 'Farm name is required';
     }
     if (!formData.location.trim()) {
-      newErrors.location = 'This field is required.';
+      newErrors.location = 'Location description is required';
     }
-
     setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) {
-      setStatusMessage({ type: 'error', text: 'Please fill in all required fields.' });
-      return false;
-    }
-
-    return true;
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
@@ -91,43 +93,30 @@ export default function MyFarm() {
     setIsSubmitting(true);
     setStatusMessage(null);
 
-    try {
-      console.log('Sending POST Payload to Backend:', formData);
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      setStatusMessage({ type: 'success', text: 'Farm profile created successfully!' });
-      if (onSaveSuccess) onSaveSuccess(formData);
-    } catch (err) {
-      console.error(err);
-      setStatusMessage({ type: 'error', text: 'Failed to save farm details. Try again.' });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    if (!formData.farmId) {
-      setStatusMessage({ type: 'error', text: 'No existing farm ID found to update. Click "Save Farm" instead.' });
-      return;
-    }
-
-    setIsSubmitting(true);
-    setStatusMessage(null);
+    const payload = {
+      farm_name: formData.farmName,
+      location: formData.location,
+      farm_size: formData.farmSize,
+      soil_type: formData.soilType,
+      elevation: formData.elevation,
+      topography: formData.topography,
+      water_availability: formData.waterAvailability,
+    };
 
     try {
       if (formData.farmId) {
-        const updated = await updateFarm(formData.farmId, payload);
+        await updateFarm(formData.farmId, payload);
         setStatusMessage({ type: 'success', text: 'Farm profile successfully updated in database!' });
       } else {
         const created = await createFarm(payload);
         setFormData((prev) => ({ ...prev, farmId: created.id }));
-        setStatusMessage({ type: 'success', text: 'Farm profile successfully created!' });
+        setStatusMessage({ type: 'success', text: 'Farm profile successfully created in database!' });
       }
     } catch (err) {
-      const detail = err.response?.data?.detail || 'Failed to save farm details. Please ensure you are logged in.';
+      const detail =
+        err.response?.data?.detail ||
+        err.response?.data?.farm_name?.[0] ||
+        'Failed to save farm details. Please ensure you are signed in.';
       setStatusMessage({ type: 'error', text: detail });
     } finally {
       setIsSubmitting(false);
@@ -139,7 +128,7 @@ export default function MyFarm() {
       <div className="farm-container">
         <header className="page-header">
           <div className="header-badge">AgriGuide Telemetry</div>
-          <h1 className="page-title">Farm & Plot Profile</h1>
+          <h1 className="page-title">Farm &amp; Plot Profile</h1>
           <p className="page-subtitle">
             Configure land telemetry, soil conditions, and elevation metrics used by the AI agent during crop assessments.
           </p>
@@ -153,9 +142,18 @@ export default function MyFarm() {
         )}
 
         {isLoading ? (
-          <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2ede5', padding: '48px', textAlign: 'center', color: '#2d6a4f' }}>
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              border: '1px solid #e2ede5',
+              padding: '48px',
+              textAlign: 'center',
+              color: '#2d6a4f',
+            }}
+          >
             <RefreshCw size={28} style={{ animation: 'spin 1s linear infinite', margin: '0 auto 10px' }} />
-            <p style={{ fontWeight: 600 }}>Loading farm profile from PostgreSQL...</p>
+            <p style={{ fontWeight: 600 }}>Loading farm profile from database...</p>
           </div>
         ) : (
           <form className="farm-form" onSubmit={handleSubmit}>
@@ -170,64 +168,64 @@ export default function MyFarm() {
                 </div>
               </div>
 
-            <div className="card-grid">
-              {/* Farm Name Field */}
-              <div className="form-group full-width">
-                <label htmlFor="farmName">
-                  Farm Name <span className="required">*</span>
-                </label>
-                <div className="input-wrapper">
-                  <Building2 className="input-icon" size={18} />
-                  <input
-                    type="text"
-                    id="farmName"
-                    name="farmName"
-                    placeholder="e.g., Green Valley Organic Farm"
-                    value={formData.farmName}
-                    onChange={handleChange}
-                    className={errors.farmName ? 'input-error' : ''}
-                  />
+              <div className="card-grid">
+                {/* Farm Name Field */}
+                <div className="form-group full-width">
+                  <label htmlFor="farmName">
+                    Farm Name <span className="required">*</span>
+                  </label>
+                  <div className="input-wrapper">
+                    <Building2 className="input-icon" size={18} />
+                    <input
+                      type="text"
+                      id="farmName"
+                      name="farmName"
+                      placeholder="e.g., Green Valley Maize Farm"
+                      value={formData.farmName}
+                      onChange={handleChange}
+                      className={errors.farmName ? 'input-error' : ''}
+                    />
+                  </div>
+                  {errors.farmName && <span className="error-text">{errors.farmName}</span>}
                 </div>
-                {errors.farmName && <span className="error-text">{errors.farmName}</span>}
-              </div>
 
-              {/* Location Field */}
-              <div className="form-group">
-                <label htmlFor="location">
-                  Location <span className="required">*</span>
-                </label>
-                <div className="input-wrapper">
-                  <MapPin className="input-icon" size={18} />
-                  <input
-                    type="text"
-                    id="location"
-                    name="location"
-                    placeholder="e.g., Oromia, East Shewa"
-                    value={formData.location}
-                    onChange={handleChange}
-                    className={errors.location ? 'input-error' : ''}
-                  />
+                {/* Location Field */}
+                <div className="form-group">
+                  <label htmlFor="location">
+                    Location <span className="required">*</span>
+                  </label>
+                  <div className="input-wrapper">
+                    <MapPin className="input-icon" size={18} />
+                    <input
+                      type="text"
+                      id="location"
+                      name="location"
+                      placeholder="e.g., Oromia, East Shewa"
+                      value={formData.location}
+                      onChange={handleChange}
+                      className={errors.location ? 'input-error' : ''}
+                    />
+                  </div>
+                  {errors.location && <span className="error-text">{errors.location}</span>}
                 </div>
-                {errors.location && <span className="error-text">{errors.location}</span>}
-              </div>
 
-              {/* Farm Size Field */}
-              <div className="form-group">
-                <label htmlFor="farmSize">Farm Size</label>
-                <div className="input-wrapper">
-                  <Ruler className="input-icon" size={18} />
-                  <input
-                    type="text"
-                    id="farmSize"
-                    name="farmSize"
-                    placeholder="e.g., 2.5 Hectares / 10 Timad"
-                    value={formData.farmSize}
-                    onChange={handleChange}
-                  />
+                {/* Farm Size Field */}
+                <div className="form-group">
+                  <label htmlFor="farmSize">Farm Size</label>
+                  <div className="input-wrapper">
+                    <Ruler className="input-icon" size={18} />
+                    <input
+                      type="text"
+                      id="farmSize"
+                      name="farmSize"
+                      placeholder="e.g., 2.5 Hectares / 10 Timad"
+                      value={formData.farmSize}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
 
             <section className="form-card">
               <div className="card-header">
@@ -235,7 +233,7 @@ export default function MyFarm() {
                   <Sprout size={20} />
                 </div>
                 <div>
-                  <h2>Terrain & Soil Profile</h2>
+                  <h2>Terrain &amp; Soil Profile</h2>
                   <p>Environmental conditions evaluated during guidance retrieval</p>
                 </div>
               </div>
@@ -287,7 +285,7 @@ export default function MyFarm() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="waterAvailability">Water Availability & Source</label>
+                  <label htmlFor="waterAvailability">Water Availability &amp; Source</label>
                   <div className="input-wrapper">
                     <Droplets className="input-icon" size={18} />
                     <input
@@ -311,7 +309,13 @@ export default function MyFarm() {
                 style={{ width: '100%', maxWidth: '320px', margin: '0 auto' }}
               >
                 <Save size={18} />
-                <span>{isSubmitting ? 'Saving to Database...' : formData.farmId ? 'Update Farm Profile' : 'Save Farm Profile'}</span>
+                <span>
+                  {isSubmitting
+                    ? 'Saving to Database...'
+                    : formData.farmId
+                    ? 'Update Farm Profile'
+                    : 'Save Farm Profile'}
+                </span>
               </button>
             </div>
           </form>
