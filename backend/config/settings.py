@@ -10,27 +10,80 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+from urllib.parse import urlparse, unquote
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load backend/.env (no-op when the file is absent) so secrets and config live
+# in the environment, never in the codebase (see AGENTS.md §7).
+load_dotenv(BASE_DIR / ".env")
+
+
+def _env_bool(name, default=False):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_list(name, default=""):
+    raw = os.environ.get(name, default)
+    return [item.strip() for item in raw.split(",") if item.strip()]
+
+
+def _database_from_url(url):
+    """Parse a DATABASE_URL into a Django DATABASES entry (PostgreSQL)."""
+    parsed = urlparse(url)
+    return {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": unquote(parsed.path.lstrip("/")),
+        "USER": unquote(parsed.username or ""),
+        "PASSWORD": unquote(parsed.password or ""),
+        "HOST": parsed.hostname or "",
+        "PORT": str(parsed.port or ""),
+        "CONN_MAX_AGE": 60,
+        "OPTIONS": {"sslmode": os.environ.get("PGSSLMODE", "prefer")},
+    }
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&xz@m784$mn+!bfo*zb$#-by-pn4z!rr_-x)aic-bclb&^n@v4'
+# The dev fallback keeps local runs working; set DJANGO_SECRET_KEY in production.
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-&xz@m784$mn+!bfo*zb$#-by-pn4z!rr_-x)aic-bclb&^n@v4",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = _env_bool("DJANGO_DEBUG", default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = _env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5174",
-]
+# CORS: read the env value (backend/.env) and, while DEBUG, always allow the
+# standard Vite dev-server ports so local development works regardless of the
+# exact port the dev server binds to. Production uses only the env list.
+CORS_ALLOWED_ORIGINS = _env_list(
+    "CORS_ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174",
+)
+
+if DEBUG:
+    for _origin in (
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+    ):
+        if _origin not in CORS_ALLOWED_ORIGINS:
+            CORS_ALLOWED_ORIGINS.append(_origin)
+
 
 # Application definition
 
@@ -40,14 +93,13 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'users',
+    'django.contrib.staticfiles',    'users',
     'rest_framework',
     'corsheaders',
     'farms',
     'recommendations',
     'weather_api',
-    
+    'agent',
 ]
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -89,13 +141,21 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
+#
+# PostgreSQL is the required database (AGENTS.md §3). Set DATABASE_URL in the
+# environment to use it. When DATABASE_URL is empty/absent we fall back to a
+# local SQLite file so development and the test suite still run offline.
+DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DATABASE_URL:
+    DATABASES = {"default": _database_from_url(DATABASE_URL)}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
 
 
 # Password validation
