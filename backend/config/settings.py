@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'farms',
     'recommendations',
     'weather_api',
+    'farm_report',
     
 ]
 REST_FRAMEWORK = {
