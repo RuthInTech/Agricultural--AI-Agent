@@ -127,15 +127,34 @@ export default function Login() {
     setIsLoading(true);
 
     try{
+      const response = await API.post('/auth/login/', {
+        identifier: formData.username,
+        username: formData.username,
+        password: formData.password,
+      });
 
-      const response = await API.post('/auth/login', formData);
-
-      if (response.data?.token){
-        localStorage.setItem('token', response.data.token);
+      const { access, token, refresh } = response.data || {};
+      const authToken = access || token;
+      if (authToken) {
+        localStorage.setItem('access_token', authToken);
+        localStorage.setItem('token', authToken);
+        if (refresh) localStorage.setItem('refresh_token', refresh);
         navigate('/Home');
+      } else {
+        setError('Login succeeded but no token was returned.');
       }
     }catch(err) {
-      setError(err.response?.data?.message  || 'Login Failed. Please check your credentials.');
+      const data = err.response?.data;
+      const errorMsg =
+        data?.identifier?.[0] ||
+        data?.identifier ||
+        data?.username?.[0] ||
+        data?.password?.[0] ||
+        data?.detail ||
+        data?.message ||
+        data?.non_field_errors?.[0] ||
+        'Login Failed. Please check your credentials.';
+      setError(typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg));
     }finally{
       setIsLoading(false);
     }

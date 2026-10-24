@@ -41,33 +41,48 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 #LOGIN WORK
 class LoginSerializer(serializers.Serializer):
-     identifier= serializers.CharField()
-     password= serializers.CharField(write_only=True, style= {"input_type": "password"})
+    identifier = serializers.CharField(required=False, allow_blank=True)
+    username = serializers.CharField(required=False, allow_blank=True)
+    email = serializers.CharField(required=False, allow_blank=True)
+    password = serializers.CharField(write_only=True, style={"input_type": "password"})
 
-     def validate(self, attrs):
-        identifier= attrs.get("identifier")
-        password= attrs.get("password")
+    def validate(self, attrs):
+        identifier = attrs.get("identifier") or attrs.get("username") or attrs.get("email")
+        if not identifier:
+            raise serializers.ValidationError({"identifier": "Username or email is required."})
+
+        password = attrs.get("password")
+        if not password:
+            raise serializers.ValidationError({"password": "Password is required."})
 
         try:
-          user = User.objects.get(username= identifier)
+            user = User.objects.get(username=identifier)
         except User.DoesNotExist:
-          try:
-            user = User.objects.get(email= identifier)
-          except User.DoesNotExist:
-              raise serializers.ValidationError({"identifier": "Invalid Email/Password"})
+            try:
+                user = User.objects.get(email=identifier)
+            except User.DoesNotExist:
+                raise serializers.ValidationError({"identifier": "Invalid username/email or password."})
 
-        user= authenticate(username= user.username, password=password)
+        user = authenticate(username=user.username, password=password)
 
         if user is None:
-            raise serializers.ValidationError({"identifier": "Invalid username/password"})
+            raise serializers.ValidationError({"identifier": "Invalid username/email or password."})
 
         if not user.is_active:
-            raise serializers.ValidationError({"identifier": "The account is innactive"})
+            raise serializers.ValidationError({"identifier": "The account is inactive."})
 
-        refersh = RefreshToken.for_user(user)
+        refresh = RefreshToken.for_user(user)
 
         return {
-            "refresh": str(refersh),
-            "access": str(refersh.access_token)
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "token": str(refresh.access_token),
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+            }
         }
 
