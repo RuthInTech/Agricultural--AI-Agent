@@ -126,7 +126,7 @@ export default function IntroPage() {
                 Sign In
               </button>
               <button className="agrivox-btn-primary" onClick={handleRegister}>
-                Submit Crop Report <ArrowRightIcon />
+                Register
               </button>
             </div>
           </div>
