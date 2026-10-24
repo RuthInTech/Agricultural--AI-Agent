@@ -1,11 +1,201 @@
-.agrivox-main-content{
+/* Layout Wrapper */
+.agrivox-page-wrapper {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-family: inherit;
+}
+
+/* Compact Header Bar Container */
+.agrivox-navbar {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.agrivox-nav-container {
+  max-width: 85rem;
+  margin: 0 auto;
+  padding: 0.5rem 1.25rem;
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* Brand Logo Group */
+.agrivox-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.agrivox-logo-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 8px;
+  background-color: #15803d;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  box-shadow: 0 2px 8px rgba(21, 128, 61, 0.25);
+}
+
+.agrivox-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+  display: block;
+}
+
+.agrivox-subtitle {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #15803d;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 2px;
+  display: block;
+}
+
+/* Nav Menu Links - Inline Single Line */
+.agrivox-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 0;
+}
+
+.agrivox-nav-link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.agrivox-nav-link:hover {
+  color: #15803d;
+}
+
+/* Compact Action Buttons */
+.agrivox-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.agrivox-btn-secondary {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.agrivox-btn-secondary:hover {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.agrivox-btn-primary {
+  background-color: #15803d;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(21, 128, 61, 0.25);
+  white-space: nowrap;
+}
+
+.agrivox-btn-primary:hover {
+  background-color: #166534;
+  transform: translateY(-1px);
+}
+
+/* Mobile Toggle and Drawer */
+.agrivox-mobile-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #334155;
+  padding: 0.25rem;
+}
+
+.agrivox-mobile-drawer {
+  display: none;
+  flex-direction: column;
+  background-color: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 1.25rem;
+  gap: 1rem;
+}
+
+.agrivox-mobile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.agrivox-mobile-menu a {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #334155;
+  text-decoration: none;
+}
+
+.agrivox-mobile-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .agrivox-nav-menu,
+  .agrivox-nav-actions {
+    display: none;
+  }
+  .agrivox-mobile-toggle {
+    display: flex;
+  }
+  .agrivox-mobile-drawer {
+    display: flex;
+  }
+}
+
+/* Main Content Section */
+.agrivox-main-content {
   max-width: 1280px;
   margin: 0 auto;
   padding: 48px 24px;
   width: 100%;
 }
 
-.agrivox-hero-section{
+.agrivox-hero-section {
   text-align: center;
   max-width: 940px;
   margin: 24px auto 56px auto;
@@ -14,39 +204,39 @@
   align-items: center;
 }
 
-.agrivox-hero-badge{
+.agrivox-hero-badge {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background-color: var(--agri-surface-light);
-  border: 1.5px solid var(--agri-border);
+  background-color: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
   padding: 8px 20px;
   border-radius: 100px;
   font-size: 15px;
   font-weight: 800;
-  color: var(--agri-green-dark-text);
+  color: #166534;
   margin-bottom: 24px;
 }
 
-.agrivox-badge-pulse{
+.agrivox-badge-pulse {
   width: 10px;
   height: 10px;
-  background-color: var(--agri-green-vibrant);
+  background-color: #22c55e;
   border-radius: 50%;
   box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.25);
 }
 
-.agrivox-hero-heading{
-  font-size: 60px;
+.agrivox-hero-heading {
+  font-size: 52px;
   font-weight: 900;
-  line-height: 1.12;
-  letter-spacing: -1.8px;
-  color: var(--agri-text-main);
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+  color: #0f172a;
   margin-bottom: 24px;
 }
 
-.agrivox-heading-accent{
-  color: var(--agri-green-primary);
+.agrivox-heading-accent {
+  color: #15803d;
   background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -54,16 +244,16 @@
   display: inline-block;
 }
 
-.agrivox-hero-description{
-  font-size: 21px;
+.agrivox-hero-description {
+  font-size: 19px;
   line-height: 1.6;
-  color: var(--agri-text-muted);
+  color: #475569;
   max-width: 780px;
   margin-bottom: 36px;
   font-weight: 500;
 }
 
-.agrivox-cta-wrapper{
+.agrivox-cta-wrapper {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -72,92 +262,91 @@
   margin-bottom: 48px;
 }
 
-.agrivox-btn-hero-primary{
-  background-color: var(--agri-green-primary);
+.agrivox-btn-hero-primary {
+  background-color: #15803d;
   color: #ffffff;
   border: none;
-  padding: 18px 36px;
-  border-radius: 16px;
-  font-size: 18px;
+  padding: 16px 32px;
+  border-radius: 14px;
+  font-size: 17px;
   font-weight: 800;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   cursor: pointer;
-  box-shadow: 0 10px 28px rgba(21, 128, 61, 0.28);
+  box-shadow: 0 8px 24px rgba(21, 128, 61, 0.28);
   transition: all 0.25s ease;
 }
 
-.agrivox-btn-hero-primary:hover{
-  background-color: var(--agri-green-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 14px 34px rgba(21, 128, 61, 0.35);
-}
-
-.agrivox-btn-hero-secondary{
-  background-color: var(--agri-surface-white);
-  border: 2px solid var(--agri-border);
-  color: var(--agri-green-dark-text);
-  padding: 18px 32px;
-  border-radius: 16px;
-  font-size: 18px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: var(--agri-shadow-sm);
-  transition: all 0.25s ease;
-}
-
-.agrivox-btn-hero-secondary:hover{
-  border-color: var(--agri-green-primary);
-  background-color: var(--agri-surface-light);
+.agrivox-btn-hero-primary:hover {
+  background-color: #166534;
   transform: translateY(-2px);
 }
 
-.agrivox-hero-stats{
+.agrivox-btn-hero-secondary {
+  background-color: #ffffff;
+  border: 2px solid #cbd5e1;
+  color: #334155;
+  padding: 16px 28px;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.agrivox-btn-hero-secondary:hover {
+  border-color: #15803d;
+  background-color: #f8fafc;
+}
+
+/* Stats Bar */
+.agrivox-hero-stats {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 32px;
-  background-color: var(--agri-surface-white);
-  border: 1.5px solid var(--agri-border);
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
   border-radius: 20px;
   padding: 24px 36px;
-  box-shadow: var(--agri-shadow-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
   width: 100%;
   max-width: 860px;
 }
 
-.hero-stat-item{
+.hero-stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.stat-number{
-  font-size: 28px;
+.stat-number {
+  font-size: 24px;
   font-weight: 900;
-  color: var(--agri-green-primary);
+  color: #15803d;
 }
 
-.stat-desc{
+.stat-desc {
   font-size: 13px;
   font-weight: 700;
-  color: var(--agri-text-muted);
+  color: #64748b;
   text-align: center;
   margin-top: 4px;
 }
 
-.hero-stat-divider{
+.hero-stat-divider {
   width: 1px;
   height: 40px;
-  background-color: var(--agri-border);
+  background-color: #e2e8f0;
 }
 
-.agrivox-filter-bar{
+/* Filter Bar Chips */
+.agrivox-filter-bar {
   margin-bottom: 44px;
 }
 
-.agrivox-chip-scroll{
+.agrivox-chip-scroll {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -167,469 +356,225 @@
   scrollbar-width: none;
 }
 
-.agrivox-chip-scroll::-webkit-scrollbar{
+.agrivox-chip-scroll::-webkit-scrollbar {
   display: none;
 }
 
-.agrivox-chip{
-  background-color: var(--agri-surface-white);
-  border: 1.5px solid var(--agri-border);
+.agrivox-chip {
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
   padding: 12px 24px;
   border-radius: 100px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  color: var(--agri-text-muted);
+  color: #64748b;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: var(--agri-shadow-sm);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
   transition: all 0.25s ease;
 }
 
-.agrivox-chip:hover{
-  border-color: var(--agri-border-strong);
-  color: var(--agri-green-primary);
+.agrivox-chip:hover {
+  border-color: #cbd5e1;
+  color: #15803d;
   transform: translateY(-2px);
 }
 
-.agrivox-chip.active{
-  background-color: var(--agri-green-primary);
+.agrivox-chip.active {
+  background-color: #15803d;
   color: #ffffff;
-  border-color: var(--agri-green-primary);
+  border-color: #15803d;
   box-shadow: 0 6px 18px rgba(21, 128, 61, 0.25);
 }
 
-.agrivox-pinterest-grid{
+/* Pinterest Grid & Cards */
+.agrivox-pinterest-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
   gap: 28px;
   align-items: start;
 }
 
-.agrivox-pin-card{
-  background-color: var(--agri-surface-white);
-  border: 1.5px solid var(--agri-border);
+.agrivox-pin-card {
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
   border-radius: 28px;
   padding: 32px;
-  box-shadow: var(--agri-shadow-md);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
 
-.agrivox-pin-card:hover{
-  transform: translateY(-6px);
-  box-shadow: var(--agri-shadow-lg);
-  border-color: var(--agri-border-strong);
+.agrivox-pin-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
 }
 
-.agrivox-card-emerald{
+.agrivox-card-emerald {
   background-color: #f0fdf4;
   border-color: #bbf7d0;
 }
 
-.agrivox-card-accent{
-  background-color: #f6faf6;
-  border-color: var(--agri-border);
-}
-
-.agrivox-pin-header{
+.agrivox-pin-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-.agrivox-pin-tag{
+.agrivox-pin-tag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
-  color: var(--agri-green-primary);
+  color: #15803d;
   letter-spacing: 0.5px;
 }
 
-.agrivox-lang-pill{
+.agrivox-lang-pill {
   font-size: 12px;
   font-weight: 800;
-  background-color: var(--agri-green-light);
-  color: var(--agri-green-dark-text);
+  background-color: #dcfce7;
+  color: #166534;
   padding: 6px 14px;
   border-radius: 100px;
 }
 
-.agrivox-pin-title{
-  font-size: 26px;
+.agrivox-pin-title {
+  font-size: 24px;
   font-weight: 900;
   margin-bottom: 12px;
-  color: var(--agri-text-main);
+  color: #0f172a;
   line-height: 1.25;
 }
 
-.agrivox-pin-body{
-  font-size: 16px;
+.agrivox-pin-body {
+  font-size: 15px;
   line-height: 1.65;
-  color: var(--agri-text-muted);
+  color: #475569;
   margin-bottom: 24px;
   font-weight: 500;
 }
 
-.agrivox-voice-box{
-  background-color: var(--agri-surface-white);
-  border: 1.5px solid var(--agri-border);
+/* Voice Box Preview Component */
+.agrivox-voice-box {
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
   border-radius: 20px;
-  padding: 22px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  box-shadow: var(--agri-shadow-sm);
+  gap: 12px;
 }
 
-.agrivox-voice-label{
-  font-size: 12px;
+.agrivox-voice-label {
+  font-size: 11px;
   font-weight: 900;
-  color: var(--agri-green-primary);
+  color: #15803d;
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
 
-.agrivox-voice-quote{
-  font-size: 17px;
+.agrivox-voice-quote {
+  font-size: 16px;
   font-weight: 800;
-  color: var(--agri-text-main);
+  color: #0f172a;
   margin-top: 2px;
 }
 
-.agrivox-voice-waves {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 28px;
-  margin: 6px 0;
-}
-
-.wave{
-  width: 5px;
-  background-color: var(--agri-green-vibrant);
-  border-radius: 10px;
-  animation: pulse 1.2s infinite ease-in-out;
-}
-
-.bar1 {height: 50%; animation-delay: 0.1s;}
-.bar2 {height: 100%; animation-delay: 0.2s;}
-.bar3 {height: 60%; animation-delay: 0.3s;}
-.bar4 {height: 90%; animation-delay: 0.4s;}
-.bar5 {height: 40%; animation-delay: 0.5s;}
-
-@keyframes pulse{
-  0%, 100% { transform: scaleY(0.3); }
-  50% { transform: scaleY(1); }
-}
-
-.agrivox-voice-response{
-  font-size: 15px;
-  color: var(--agri-text-muted);
+.agrivox-voice-response {
+  font-size: 14px;
+  color: #475569;
   font-weight: 600;
 }
 
-.agrivox-stat-card{
+/* Stat Card List Component */
+.agrivox-stat-card {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.agrivox-stat-row{
+.agrivox-stat-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 18px;
-  background-color: var(--agri-bg-page);
+  background-color: #f8fafc;
   border-radius: 16px;
-  border: 1px solid var(--agri-border);
+  border: 1px solid #e2e8f0;
 }
 
-.crop-name{
+.crop-name {
   display: block;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
-  color: var(--agri-text-main);
+  color: #0f172a;
 }
 
-.crop-loc{
+.crop-loc {
   display: block;
   font-size: 12px;
-  color: var(--agri-text-subtle);
+  color: #64748b;
   font-weight: 600;
 }
 
-.agrivox-stat-badge{
-  font-size: 13px;
+.agrivox-stat-badge {
+  font-size: 12px;
   font-weight: 800;
   padding: 6px 12px;
   border-radius: 10px;
+  white-space: nowrap;
 }
 
-.agrivox-stat-badge.positive{
-  background-color: var(--agri-green-light);
-  color: var(--agri-green-dark-text);
+.agrivox-stat-badge.positive {
+  background-color: #dcfce7;
+  color: #166534;
 }
 
-.agrivox-stat-badge.neutral{
+.agrivox-stat-badge.neutral {
   background-color: #e2e8f0;
   color: #334155;
 }
 
-.agrivox-trade-preview{
+/* Trade Preview Component */
+.agrivox-trade-preview {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.trade-step{
+.trade-step {
   display: flex;
   align-items: center;
   gap: 14px;
-  background-color: var(--agri-bg-page);
+  background-color: #f8fafc;
   padding: 12px 16px;
   border-radius: 14px;
+  border: 1px solid #e2e8f0;
 }
 
-.step-num{
-  width: 32px;
-  height: 32px;
-  background-color: var(--agri-green-primary);
+.step-num {
+  width: 28px;
+  height: 28px;
+  background-color: #15803d;
   color: #ffffff;
   border-radius: 50%;
   font-weight: 900;
-  font-size: 14px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.trade-step p{
+.trade-step p {
   font-size: 14px;
   font-weight: 700;
-  color: var(--agri-text-main);
-}
-
-.agrivox-weather-preview{
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  background-color: var(--agri-surface-light);
-  border: 1px solid var(--agri-border);
-  padding: 20px;
-  border-radius: 20px;
-}
-
-.agrivox-weather-icon{
-  width: 52px;
-  height: 52px;
-  background-color: var(--agri-green-primary);
-  color: #ffffff;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.agrivox-weather-temp{
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--agri-green-dark-text);
-}
-
-.agrivox-weather-text{
-  font-size: 14px;
-  color: var(--agri-text-muted);
-  margin-top: 4px;
-}
-
-.agrivox-impact-tags{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.impact-pill{
-  background-color: var(--agri-surface-white);
-  border: 1.5px solid var(--agri-border);
-  padding: 8px 16px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--agri-green-primary);
-}
-
-.agrivox-modal-overlay{
-  position: fixed;
-  inset: 0;
-  background-color: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  z-index: 200;
-}
-
-.agrivox-modal-card{
-  background-color: var(--agri-surface-white);
-  border-radius: 32px;
-  padding: 40px;
-  width: 100%;
-  max-width: 500px;
-  position: relative;
-  box-shadow: var(--agri-shadow-lg);
-  border: 1px solid var(--agri-border);
-}
-
-.agrivox-modal-close{
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  background: transparent;
-  border: none;
-  color: var(--agri-text-subtle);
-  cursor: pointer;
-}
-
-.agrivox-modal-header{
-  margin-bottom: 28px;
-}
-
-.agrivox-modal-header h2{
-  font-size: 26px;
-  font-weight: 900;
-  margin: 16px 0 8px 0;
-  color: var(--agri-text-main);
-}
-
-.agrivox-modal-header p{
-  font-size: 15px;
-  color: var(--agri-text-muted);
-}
-
-.agrivox-form-group{
-  margin-bottom: 24px;
-}
-
-.agrivox-form-label{
-  display: block;
-  font-size: 13px;
-  font-weight: 900;
-  text-transform: uppercase;
-  color: var(--agri-green-primary);
-  margin-bottom: 12px;
-  letter-spacing: 0.5px;
-}
-
-.agrivox-role-grid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.agrivox-role-card{
-  background-color: var(--agri-bg-page);
-  border: 1.5px solid var(--agri-border);
-  padding: 14px;
-  border-radius: 14px;
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--agri-text-main);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-}
-
-.agrivox-role-card.active{
-  background-color: var(--agri-surface-light);
-  border-color: var(--agri-green-primary);
-  color: var(--agri-green-primary);
-}
-
-.agrivox-form-input{
-  width: 100%;
-  padding: 16px 20px;
-  background-color: var(--agri-bg-page);
-  border: 1.5px solid var(--agri-border);
-  border-radius: 14px;
-  font-size: 16px;
-  color: var(--agri-text-main);
-  font-weight: 600;
-}
-
-.agrivox-form-input:focus{
-  outline: none;
-  border-color: var(--agri-green-primary);
-  background-color: var(--agri-surface-white);
-  box-shadow: 0 0 0 4px rgba(21, 128, 61, 0.15);
-}
-
-.agrivox-btn-submit{
-  width: 100%;
-  background-color: var(--agri-green-primary);
-  color: #ffffff;
-  border: none;
-  padding: 18px;
-  border-radius: 16px;
-  font-weight: 900;
-  font-size: 17px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(21, 128, 61, 0.3);
-  transition: all 0.2s ease;
-}
-
-.agrivox-btn-submit:hover{
-  background-color: var(--agri-green-hover);
-  transform: translateY(-2px);
-}
-
-/* Mobile Responsiveness Rules */
-@media (max-width: 768px){
-  .agrivox-hero-heading{
-    font-size: 38px;
-  }
-
-  .agrivox-hero-description{
-    font-size: 17px;
-  }
-
-  .agrivox-pinterest-grid{
-    grid-template-columns: 1fr;
-  }
-
-  .agrivox-hero-stats{
-    flex-direction: column;
-    gap: 18px;
-    padding: 20px;
-  }
-
-  .hero-stat-divider{
-    width: 80%;
-    height: 1px;
-  }
-
-  .agrivox-cta-wrapper{
-    width: 100%;
-  }
-
-  .agrivox-btn-hero-primary,
-  .agrivox-btn-hero-secondary{
-    width: 100%;
-    justify-content: center;
-  }
-
-  .agrivox-role-grid{
-    grid-template-columns: 1fr;
-  }
+  color: #0f172a;
+  margin: 0;
 }

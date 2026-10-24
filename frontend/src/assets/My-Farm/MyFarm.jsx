@@ -1,6 +1,6 @@
 import './MyFarm.css';
-import {useState} from 'react';
-import {Building2, MapPin, Ruler, Sprout, Mountain, Layers, Droplets, Save, RefreshCw, CheckCircle2, AlertCircle} from 'lucide-react';
+import { useState } from 'react';
+import { Building2, MapPin, Ruler, Sprout, Mountain, Layers, Droplets, Save, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function MyFarm({ initialData = null, onSaveSuccess }) {
   const [formData, setFormData] = useState({
@@ -14,6 +14,7 @@ export default function MyFarm({ initialData = null, onSaveSuccess }) {
     waterAvailability: initialData?.waterAvailability || '',
   });
 
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null);
 
@@ -23,13 +24,29 @@ export default function MyFarm({ initialData = null, onSaveSuccess }) {
       ...prev,
       [name]: value,
     }));
+    // Clear error for this field as the user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const validateForm = () => {
-    if (!formData.farmName.trim() || !formData.location.trim()) {
-      setStatusMessage({ type: 'error', text: 'Farm Name and Location are required.' });
+    const newErrors = {};
+
+    if (!formData.farmName.trim()) {
+      newErrors.farmName = 'This field is required.';
+    }
+    if (!formData.location.trim()) {
+      newErrors.location = 'This field is required.';
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      setStatusMessage({ type: 'error', text: 'Please fill in all required fields.' });
       return false;
     }
+
     return true;
   };
 
@@ -43,16 +60,6 @@ export default function MyFarm({ initialData = null, onSaveSuccess }) {
     try {
       console.log('Sending POST Payload to Backend:', formData);
       await new Promise((resolve) => setTimeout(resolve, 800));
-
-      // Example API Call:
-      // const response = await fetch('/api/farms', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData),
-      // });
-      
-      // Simulate delay for testing UI
-
 
       setStatusMessage({ type: 'success', text: 'Farm profile created successfully!' });
       if (onSaveSuccess) onSaveSuccess(formData);
@@ -120,8 +127,11 @@ export default function MyFarm({ initialData = null, onSaveSuccess }) {
             </div>
 
             <div className="card-grid">
+              {/* Farm Name Field */}
               <div className="form-group full-width">
-                <label htmlFor="farmName">Farm Name</label>
+                <label htmlFor="farmName">
+                  Farm Name <span className="required">*</span>
+                </label>
                 <div className="input-wrapper">
                   <Building2 className="input-icon" size={18} />
                   <input
@@ -131,12 +141,17 @@ export default function MyFarm({ initialData = null, onSaveSuccess }) {
                     placeholder="e.g., Green Valley Organic Farm"
                     value={formData.farmName}
                     onChange={handleChange}
+                    className={errors.farmName ? 'input-error' : ''}
                   />
                 </div>
+                {errors.farmName && <span className="error-text">{errors.farmName}</span>}
               </div>
 
+              {/* Location Field */}
               <div className="form-group">
-                <label htmlFor="location">Location</label>
+                <label htmlFor="location">
+                  Location <span className="required">*</span>
+                </label>
                 <div className="input-wrapper">
                   <MapPin className="input-icon" size={18} />
                   <input
@@ -146,10 +161,13 @@ export default function MyFarm({ initialData = null, onSaveSuccess }) {
                     placeholder="e.g., Oromia, East Shewa"
                     value={formData.location}
                     onChange={handleChange}
+                    className={errors.location ? 'input-error' : ''}
                   />
                 </div>
+                {errors.location && <span className="error-text">{errors.location}</span>}
               </div>
 
+              {/* Farm Size Field */}
               <div className="form-group">
                 <label htmlFor="farmSize">Farm Size</label>
                 <div className="input-wrapper">

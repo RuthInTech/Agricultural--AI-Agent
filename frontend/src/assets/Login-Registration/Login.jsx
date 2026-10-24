@@ -32,78 +32,90 @@ const EyeIcon = ({ show }) => show ? (
 
 const NetworkGraphic = () => (
   <svg
-      className="registration-svg"
-      viewBox="0 0 500 500"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ width: '100%', height: 'auto', maxHeight: '420px' }}
-      >
-      <defs>
-        <linearGradient id="regLeafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#15803d" />
-          <stop offset="50%" stopColor="#16a34a" />
-          <stop offset="100%" stopColor="#4ade80" />
-        </linearGradient>
+    className="registration-svg"
+    viewBox="0 0 500 500"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ width: '100%', height: 'auto', maxHeight: '420px' }}
+  >
+    <defs>
+      <linearGradient id="regLeafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#15803d" />
+        <stop offset="50%" stopColor="#16a34a" />
+        <stop offset="100%" stopColor="#4ade80" />
+      </linearGradient>
 
-        <linearGradient id="regAccentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#eab308" />
-          <stop offset="100%" stopColor="#10b981" />
-        </linearGradient>
+      <linearGradient id="regAccentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#eab308" />
+        <stop offset="100%" stopColor="#10b981" />
+      </linearGradient>
 
-        <radialGradient id="regBgGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#22c55e" stopOpacity="0.2" />            
-          <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
-        </radialGradient>
+      <radialGradient id="regBgGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#22c55e" stopOpacity="0.3" />
+        <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
+      </radialGradient>
 
-        <filter id="nodeGlow" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="6" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-      </defs>
+      <filter id="nodeGlow" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="6" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
+    </defs>
 
-      <circle cx="250" cy="250" r="210" fill="url(#regBgGlow)" />
-      <circle cx="250" cy="250" r="185" stroke="#22c55e" strokeWidth="1.5" strokeDasharray="6 8" opacity="0.35" />
-      <circle cx="250" cy="250" r="140" stroke="#10b981" strokeWidth="1.5" strokeDasharray="4 6" opacity="0.45" />
-      <path d="M 130 250 A 120 120 0 0 1 370 250" stroke="url(#regAccentGrad)" strokeWidth="3" strokeLinecap="round" opacity="0.6" />
-      <path d="M 160 250 A 90 90 0 0 1 340 250" stroke="url(#regLeafGrad)" strokeWidth="4" strokeLinecap="round" />
-      <path d="M 250 360 V 215" stroke="url(#regLeafGrad)" strokeWidth="6" strokeLinecap="round" />
+    {/* Animated Breathing Background Glow */}
+    <circle cx="250" cy="250" r="210" fill="url(#regBgGlow)" className="anim-bg-glow" />
 
-      <path
-        d="M 250 285 C 190 275 170 220 215 210 C 238 220 248 250 250 285 Z"          
-        fill="url(#regLeafGrad)"
-      />
+    {/* Counter-Rotating Orbit Rings */}
+    <circle cx="250" cy="250" r="185" stroke="#22c55e" strokeWidth="1.5" strokeDasharray="6 8" opacity="0.4" className="anim-ring-outer" />
+    <circle cx="250" cy="250" r="140" stroke="#10b981" strokeWidth="1.5" strokeDasharray="4 6" opacity="0.5" className="anim-ring-inner" />
 
-      <path
-        d="M 250 250 C 310 240 330 185 285 175 C 262 185 252 215 250 250 Z"
-        fill="url(#regLeafGrad)"
-      />
+    {/* Network Arcs and Stem */}
+    <path d="M 130 250 A 120 120 0 0 1 370 250" stroke="url(#regAccentGrad)" strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+    <path d="M 160 250 A 90 90 0 0 1 340 250" stroke="url(#regLeafGrad)" strokeWidth="4" strokeLinecap="round" />
+    <path d="M 250 360 V 215" stroke="url(#regLeafGrad)" strokeWidth="6" strokeLinecap="round" />
 
-      <circle cx="250" cy="195" r="15" fill="url(#regAccentGrad)" filter="url(#nodeGlow)" />
-      <circle cx="250" cy="195" r="6" fill="#ffffff" />
+    {/* Leaves */}
+    <path d="M 250 285 C 190 275 170 220 215 210 C 238 220 248 250 250 285 Z" fill="url(#regLeafGrad)" />
+    <path d="M 250 250 C 310 240 330 185 285 175 C 262 185 252 215 250 250 Z" fill="url(#regLeafGrad)" />
 
-      <g opacity="0.85">
+    {/* Pulsating Core Node */}
+    <circle cx="250" cy="195" r="15" fill="url(#regAccentGrad)" filter="url(#nodeGlow)" className="anim-node-pulse" />
+    <circle cx="250" cy="195" r="6" fill="#ffffff" />
+
+    {/* Floating Satellite Nodes */}
+    <g opacity="0.85">
+      <g className="anim-float-1">
         <line x1="250" y1="195" x2="340" y2="135" stroke="#22c55e" strokeWidth="1.5" strokeDasharray="3 3" />
         <circle cx="340" cy="135" r="8" fill="#16a34a" />
-        <circle cx="340" cy="135" r="3.5" fill="#ffffff" />            
+        <circle cx="340" cy="135" r="3.5" fill="#ffffff" />
+      </g>
+
+      <g className="anim-float-2">
         <line x1="250" y1="195" x2="165" y2="145" stroke="#22c55e" strokeWidth="1.5" strokeDasharray="3 3" />
         <circle cx="165" cy="145" r="7" fill="#eab308" />
+      </g>
+
+      <g className="anim-float-1">
         <line x1="250" y1="285" x2="360" y2="295" stroke="#10b981" strokeWidth="1.5" strokeDasharray="3 3" />
         <circle cx="360" cy="295" r="7" fill="#10b981" />
-        <line x1="250" y1="320" x2="145" y2="325" stroke="#10b981" strokeWidth="1.5" strokeDasharray="3 3" />
-        <circle cx="145" cy="325" r="6" fill="#22c55e" />        
       </g>
 
-      <g transform="translate(198, 375)">
-        <rect x="0" y="10" width="5" height="20" rx="2.5" fill="#16a34a" opacity="0.5" />
-        <rect x="15" y="2" width="5" height="28" rx="2.5" fill="#22c55e" />
-        <rect x="30" y="-8" width="5" height="38" rx="2.5" fill="#10b981" />
-        <rect x="45" y="-3" width="5" height="33" rx="2.5" fill="#eab308" />
-        <rect x="60" y="5" width="5" height="25" rx="2.5" fill="#16a34a" opacity="0.8" />
-        <rect x="75" y="12" width="5" height="18" rx="2.5" fill="#16a34a" opacity="0.4" />        
+      <g className="anim-float-2">
+        <line x1="250" y1="320" x2="145" y2="325" stroke="#10b981" strokeWidth="1.5" strokeDasharray="3 3" />
+        <circle cx="145" cy="325" r="6" fill="#22c55e" />
       </g>
+    </g>
+
+    {/* Animated Telemetry Equalizer Bars */}
+    <g transform="translate(198, 375)">
+      <rect x="0" y="10" width="5" height="20" rx="2.5" fill="#16a34a" className="anim-bar bar-1" />
+      <rect x="15" y="2" width="5" height="28" rx="2.5" fill="#22c55e" className="anim-bar bar-2" />
+      <rect x="30" y="-8" width="5" height="38" rx="2.5" fill="#10b981" className="anim-bar bar-3" />
+      <rect x="45" y="-3" width="5" height="33" rx="2.5" fill="#eab308" className="anim-bar bar-4" />
+      <rect x="60" y="5" width="5" height="25" rx="2.5" fill="#16a34a" className="anim-bar bar-5" />
+      <rect x="75" y="12" width="5" height="18" rx="2.5" fill="#16a34a" className="anim-bar bar-6" />
+    </g>
   </svg>
 );
-
 export default function Login() {
   const navigate = useNavigate();
 
@@ -148,8 +160,8 @@ export default function Login() {
         <div className="login-graphic-side">
           <NetworkGraphic />
           <div className="graphic-overlay-content">
-            <span className="graphic-badge">AgriVox Intelligence</span>
-            <h3>Voice-Driven Agricultural Insights</h3>
+            <span className="graphic-badge">AgriGuide Intelligence</span>
+            <h3>AI-Agricultural Extension Platform</h3>
           </div>
         </div>
 
@@ -160,7 +172,7 @@ export default function Login() {
             <div className="agrivox-logo-icon">
               <SproutIcon />
             </div>
-            <span className="agrivox-title">AgriVox</span>
+            <span className="agrivox-title">AgriGuide</span>
           </div>
 
           <div className="login-title-group">

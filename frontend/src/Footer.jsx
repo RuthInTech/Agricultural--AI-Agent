@@ -14,12 +14,12 @@ export default function Footer(){
                     <SproutIcon />
                   </div>
                   <div>
-                    <span className="agrivox-title">AgriVox</span>
-                    <p className="agrivox-footer-sub">Next-Generation Voice Agricultural Intelligence</p>
+                    <span className="agrivox-title">AgriGuide</span>
+                    <p className="agrivox-footer-sub">AI-Agricultural Extension Platform</p>
                   </div>
                 </div>
                 <p className="agrivox-copyright">
-                  © 2026 AgriVox Technologies. All rights reserved. Built for agricultural transformation.
+                  © 2026 AgriGuide Technologies. All rights reserved. Built for agricultural transformation.
                 </p>
               </div>
             </footer>
