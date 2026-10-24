@@ -1,49 +1,55 @@
-import {Routes, Route, Outlet} from "react-router-dom";
-import IntroPage from "./assets/Intro-page/IntroPage.jsx";
-import Register from "./assets/Login-Registration/Register.jsx";
-import Login from "./assets/Login-Registration/Login.jsx";
-import Header from "./Header.jsx";
-import Footer from "./Footer.jsx";
-import HomePage from "./assets/Home-page/HomePage.jsx";
-import MyFarm from "./assets/My-Farm/MyFarm.jsx";
-import Recommendations from "./assets/Recommendations/Recommendations.jsx";
-import Weather from "./assets/Weather/Weather.jsx";
-import MarketPlace from "./assets/Market-Place/MarketPlace.jsx";
-import Profile from "./assets/Profile/Profile.jsx";
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import IntroPage from './assets/Intro-page/IntroPage.jsx';
+import Register from './assets/Login-Registration/Register.jsx';
+import Login from './assets/Login-Registration/Login.jsx';
+import AppShell from './layout/AppShell.jsx';
+import HomePage from './assets/Home-page/HomePage.jsx';
+import Weather from './assets/Weather/Weather.jsx';
+import FarmerReportForm from './ExtensionAgent/FarmerReportForm.jsx';
+import CasesPage from './pages/CasesPage.jsx';
+import GuidancePage from './pages/GuidancePage.jsx';
+import SavedAdvisoriesPage from './pages/SavedAdvisoriesPage.jsx';
+import MyFarm from './assets/My-Farm/MyFarm.jsx';
+import Profile from './assets/Profile/Profile.jsx';
 
-function MainLayout(){
-  return(
-    <>
-    <Header/>
-    <Outlet/>
-    </>
-  );
+function RequireAuth({ children }) {
+  const token = localStorage.getItem('access_token') || localStorage.getItem('token');
+  const location = useLocation();
+
+  if (!token) {
+    return <Navigate to="/Login" replace state={{ from: location }} />;
+  }
+  return children;
 }
 
-function App() {
+export default function App() {
   return (
-    <>
-      <div className="agrivox-page-wrapper">
-        <main className="app-main-content">
-          <Routes>
-            <Route path="/" element={<IntroPage/>}/>
-            <Route path="/Register" element={<Register/>}/>
-            <Route path="/Login" element={<Login/>}/>
+    <Routes>
+      {/* Public Marketing & Auth Routes */}
+      <Route path="/" element={<IntroPage />} />
+      <Route path="/Register" element={<Register />} />
+      <Route path="/Login" element={<Login />} />
 
-            <Route element={<MainLayout/>}>
-              <Route path="/Home" element={<HomePage/>}/>
-              <Route path="/MyFarm" element={<MyFarm/>}/>
-              <Route path="/Recommendations" element={<Recommendations/>}/>
-              <Route path="/Weather" element={<Weather/>}/>
-              <Route path="/MarketPlace" element={<MarketPlace/>}/>
-              <Route path="/Profile" element={<Profile/>}/>
-            </Route>
-          </Routes>
-        </main>
-        <Footer/>
-      </div>
-    </>
+      {/* Main Application Shell Navigation */}
+      <Route
+        element={
+          <RequireAuth>
+            <AppShell />
+          </RequireAuth>
+        }
+      >
+        <Route path="/Home" element={<HomePage />} />
+        <Route path="/Weather" element={<Weather />} />
+        <Route path="/Recommendations" element={<FarmerReportForm />} />
+        <Route path="/CaseHistory" element={<CasesPage />} />
+        <Route path="/Guidance" element={<GuidancePage />} />
+        <Route path="/SavedRecords" element={<SavedAdvisoriesPage />} />
+        <Route path="/MyFarm" element={<MyFarm />} />
+        <Route path="/Profile" element={<Profile />} />
+      </Route>
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
-
-export default App

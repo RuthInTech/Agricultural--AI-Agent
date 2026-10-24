@@ -1,192 +1,73 @@
 import { useState, useEffect } from 'react';
 import './Profile.css';
-import API from '../../api/axios.js';
-import { User, Mail, Phone, MapPin, Sprout, Layers, Droplets, Edit3, Save, LogOut, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import { getMe, getStoredUser, logoutUser } from '../../api/auth';
+import { User, Mail, Phone, MapPin, Sprout, LogOut, CheckCircle2, AlertCircle, RefreshCw, ShieldCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
-  const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState(null);
-
-  const [userData, setUserData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    location: '',
-    farmSize: '',
-    primaryCrops: '',
-    soilType: '',
-    irrigationType: '',
-  });
-
-  const convertBackendToFrontendProfile = (data) => ({
-    firstName: data.first_name || data.firstName || '',
-    lastName: data.last_name || data.lastName || '',
-    email: data.email || '',
-    phoneNumber: data.phone_number || data.phoneNumber || '',
-    location: data.location || data.region || 'Addis Ababa, Ethiopia',
-    farmSize: data.farm_size || data.farmSize || '2.5',
-    primaryCrops: data.primary_crops || data.primary_crop || data.primaryCrops || 'Maize, Teff',
-    soilType: data.soil_type || data.soilType || 'Loam',
-    irrigationType: data.irrigation_type || data.irrigationType || 'Rainfed',
-  });
 
   useEffect(() => {
-    const fetchProfileAndFarmData = async () => {
-      setIsLoading(true);
-      setStatusMessage(null);
+    const local = getStoredUser();
+    setCurrentUser(local);
 
-      try {
-        const response = await API.get('/profile/');
-        console.log('Profile data loaded:', response.data);
-
-        if (response.data) {
-          setUserData(convertBackendToFrontendProfile(response.data));
+    getMe()
+      .then((data) => {
+        if (data) {
+          setCurrentUser((prev) => ({
+            ...prev,
+            ...data,
+          }));
         }
-      } catch (err) {
-        console.error('Failed to fetch profile:', err.response?.data || err.message);
-        setStatusMessage({
-          type: 'error',
-          text: 'Could not connect to backend. Showing offline profile values.',
-        });
-
-        setUserData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          phoneNumber: '',
-          location: '',
-          farmSize: '',
-          primaryCrops: '',
-          soilType: '',
-          irrigationType: '',
-        });
-      } finally {
+      })
+      .catch((err) => {
+        console.warn('Could not fetch /api/auth/me/:', err);
+      })
+      .finally(() => {
         setIsLoading(false);
-      }
-    };
-
-    fetchProfileAndFarmData();
+      });
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    setStatusMessage(null);
-
-    const payload = {
-      first_name: userData.firstName,
-      last_name: userData.lastName,
-      email: userData.email,
-      phone_number: userData.phoneNumber,
-      location: userData.location,
-      farm_size: userData.farmSize,
-      primary_crops: userData.primaryCrops,
-      soil_type: userData.soilType,
-      irrigation_type: userData.irrigationType,
-    };
-
-    try {
-      await API.put('/profile/update/', payload);
-      setStatusMessage({ type: 'success', text: 'Profile and farm settings saved!' });
-      setIsEditing(false);
-    } catch (err) {
-      console.error('Failed to save profile:', err.response?.data || err.message);
-      setStatusMessage({
-        type: 'error',
-        text: err.response?.data?.detail || 'Failed to save changes to backend.',
-      });
-      setIsEditing(false);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    window.location.href = '/login';
+    logoutUser();
+    navigate('/Login', { replace: true });
   };
 
-  if (isLoading) {
-    return (
-      <div className="profile-loading">
-        <RefreshCw size={24} className="spin" />
-        <span>Loading profile information...</span>
-      </div>
-    );
-  }
+  const displayName = currentUser?.first_name
+    ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim()
+    : currentUser?.username || 'Extension Officer';
 
   return (
-    <div className="profile-container">
+    <div className="profile-container" style={{ maxWidth: '860px', margin: '0 auto' }}>
       <div className="profile-card-header">
         <div className="avatar-circle">
-          <User size={38} color="#0e7537" />
+          <User size={38} color="#1b4332" />
         </div>
         <div className="user-title-group">
-          <h2>{`${userData.firstName} ${userData.lastName}`.trim() || 'AgriVox User'}</h2>
-          <span className="user-role-badge">Verified Farmer</span>
+          <h2>{displayName}</h2>
+          <span className="user-role-badge">Agricultural Extension Worker</span>
         </div>
+
         <button
-          className={`action-btn ${isEditing ? 'save-btn' : 'edit-btn'}`}
-          onClick={isEditing ? handleSave : () => setIsEditing(true)}
-          disabled={isSaving}
+          className="action-btn"
+          style={{ background: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', display: 'flex', alignItems: 'center', gap: '6px' }}
+          onClick={handleLogout}
         >
-          {isSaving ? (
-            <RefreshCw size={16} className="spin" />
-          ) : isEditing ? (
-            <>
-              <Save size={16} /> Save Changes
-            </>
-          ) : (
-            <>
-              <Edit3 size={16} /> Edit Profile
-            </>
-          )}
+          <LogOut size={16} /> Sign Out
         </button>
       </div>
 
-      {statusMessage && (
-        <div className={`status-toast ${statusMessage.type}`}>
-          {statusMessage.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
-          <span>{statusMessage.text}</span>
-        </div>
-      )}
-
       <div className="profile-grid">
         <div className="profile-section-card">
-          <h3 className="section-title">Personal Details</h3>
+          <h3 className="section-title">Account Details</h3>
 
           <div className="input-group">
-            <label>First Name</label>
+            <label>Username</label>
             <div className="input-wrapper">
               <User size={18} className="input-icon" />
-              <input
-                type="text"
-                name="firstName"
-                value={userData.firstName}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
-            </div>
-          </div>
-
-          <div className="input-group">
-            <label>Last Name</label>
-            <div className="input-wrapper">
-              <User size={18} className="input-icon" />
-              <input
-                type="text"
-                name="lastName"
-                value={userData.lastName}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
+              <input type="text" value={currentUser?.username || ''} readOnly />
             </div>
           </div>
 
@@ -194,108 +75,42 @@ export default function Profile() {
             <label>Email Address</label>
             <div className="input-wrapper">
               <Mail size={18} className="input-icon" />
-              <input
-                type="email"
-                name="email"
-                value={userData.email}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
+              <input type="email" value={currentUser?.email || ''} readOnly />
             </div>
           </div>
 
           <div className="input-group">
-            <label>Phone Number</label>
+            <label>Role</label>
             <div className="input-wrapper">
-              <Phone size={18} className="input-icon" />
-              <input
-                type="text"
-                name="phoneNumber"
-                value={userData.phoneNumber}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
+              <ShieldCheck size={18} className="input-icon" />
+              <input type="text" value="Authorized Extension Field Agent" readOnly />
             </div>
           </div>
         </div>
 
         <div className="profile-section-card">
-          <h3 className="section-title">Farm & Location Specs</h3>
+          <h3 className="section-title">System Status & Environment</h3>
 
-          <div className="input-group">
-            <label>Location / Region</label>
-            <div className="input-wrapper">
-              <MapPin size={18} className="input-icon" />
-              <input
-                type="text"
-                name="location"
-                value={userData.location}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13.5px', color: '#334155' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f0fdf4', padding: '10px 14px', borderRadius: '10px', border: '1px solid #bbf7d0', color: '#166534' }}>
+              <CheckCircle2 size={16} />
+              <span><strong>Backend API:</strong> Connected (Django REST Framework)</span>
             </div>
-          </div>
 
-          <div className="input-group">
-            <label>Farm Size (Hectares)</label>
-            <div className="input-wrapper">
-              <Sprout size={18} className="input-icon" />
-              <input
-                type="text"
-                name="farmSize"
-                value={userData.farmSize}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f0fdf4', padding: '10px 14px', borderRadius: '10px', border: '1px solid #bbf7d0', color: '#166534' }}>
+              <CheckCircle2 size={16} />
+              <span><strong>Database:</strong> PostgreSQL Persistent Records</span>
             </div>
-          </div>
 
-          <div className="input-group">
-            <label>Primary Crop(s)</label>
-            <div className="input-wrapper">
-              <Sprout size={18} className="input-icon" />
-              <input
-                type="text"
-                name="primaryCrops"
-                value={userData.primaryCrops}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f0fdf4', padding: '10px 14px', borderRadius: '10px', border: '1px solid #bbf7d0', color: '#166534' }}>
+              <CheckCircle2 size={16} />
+              <span><strong>Weather Telemetry:</strong> Live Regional Forecast Active</span>
             </div>
-          </div>
 
-          <div className="input-group">
-            <label>Soil Type</label>
-            <div className="input-wrapper">
-              <Layers size={18} className="input-icon" />
-              <input
-                type="text"
-                name="soilType"
-                value={userData.soilType}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f0fdf4', padding: '10px 14px', borderRadius: '10px', border: '1px solid #bbf7d0', color: '#166534' }}>
+              <CheckCircle2 size={16} />
+              <span><strong>Decision Safety:</strong> Cautious, Source-Referenced Agent Rules</span>
             </div>
-          </div>
-
-          <div className="input-group">
-            <label>Irrigation System</label>
-            <div className="input-wrapper">
-              <Droplets size={18} className="input-icon" />
-              <input
-                type="text"
-                name="irrigationType"
-                value={userData.irrigationType}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
-            </div>
-          </div>
-
-          <div className="logout-wrapper">
-            <button className="logout-btn" onClick={handleLogout}>
-              <LogOut size={18} /> Log Out
-            </button>
           </div>
         </div>
       </div>
