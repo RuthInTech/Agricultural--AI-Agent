@@ -1,0 +1,314 @@
+:root{
+  --agri-bg-page: #f4f9f4;
+  --agri-surface-white: #ffffff;
+  --agri-surface-light: #e8f5e9;
+  --agri-green-primary: #15803d;      
+  --agri-green-hover: #11622e;
+  --agri-green-light: #dcfce7;
+  --agri-green-vibrant: #16a34a;
+  --agri-green-dark-text: #052e16;
+  --agri-text-main: #0f172a;
+  --agri-text-muted: #334155;
+  --agri-text-subtle: #64748b;
+  --agri-border: #c8e6c9;
+  --agri-border-strong: #4ade80;
+  --agri-shadow-sm: 0 4px 12px rgba(21, 128, 61, 0.06);
+  --agri-shadow-md: 0 12px 32px -4px rgba(15, 23, 42, 0.08);
+  --agri-shadow-lg: 0 20px 48px -8px rgba(21, 128, 61, 0.16);
+  --agri-font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html{
+  scroll-behavior: smooth;
+  font-size: 16.75px;
+}
+
+body{
+  background-color: var(--agri-bg-page);
+  color: var(--agri-text-main);
+  font-family: var(--agri-font-family);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.agrivox-page-wrapper{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--agri-bg-page);
+}
+
+.agrivox-navbar{
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--agri-border);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.03);
+}
+
+.agrivox-nav-container{
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.agrivox-brand-logo{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: var(--agri-text-main);
+}
+
+.agrivox-logo-icon{
+  width: 48px;
+  height: 48px;
+  background-color: var(--agri-green-primary);
+  color: #ffffff;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(21, 128, 61, 0.25);
+  flex-shrink: 0;
+}
+
+.agrivox-brand-text{
+  display: flex;
+  flex-direction: column;
+}
+
+.agrivox-title{
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: var(--agri-green-dark-text);
+  line-height: 1.1;
+}
+
+.agrivox-subtitle{
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--agri-green-primary);
+  letter-spacing: 1.8px;
+  margin-top: 2px;
+}
+
+.agrivox-nav-menu{
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.agrivox-nav-link{
+  color: var(--agri-text-muted);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.agrivox-nav-link:hover{
+  color: var(--agri-green-primary);
+}
+
+.agrivox-nav-actions{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.agrivox-btn-secondary{
+  background-color: var(--agri-surface-light);
+  border: 1.5px solid var(--agri-border);
+  color: var(--agri-green-dark-text);
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.agrivox-btn-secondary:hover{
+  background-color: var(--agri-green-light);
+  border-color: var(--agri-green-primary);
+}
+
+.agrivox-btn-primary{
+  background-color: var(--agri-green-primary);
+  color: #ffffff;
+  border: none;
+  padding: 12px 26px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(21, 128, 61, 0.28);
+  transition: all 0.2s ease;
+}
+
+.agrivox-btn-primary:hover{
+  background-color: var(--agri-green-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(21, 128, 61, 0.35);
+}
+
+.agrivox-mobile-toggle{
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--agri-green-dark-text);
+  cursor: pointer;
+  padding: 8px;
+}
+
+.agrivox-mobile-drawer{
+  display: flex;
+  flex-direction: column;
+  background-color: var(--agri-surface-white);
+  border-bottom: 2px solid var(--agri-border);
+  padding: 24px;
+  gap: 20px;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+}
+
+.agrivox-mobile-menu{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.agrivox-mobile-menu a{
+  text-decoration: none;
+  color: var(--agri-text-main);
+  font-weight: 700;
+  font-size: 18px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--agri-bg-page);
+}
+
+.agrivox-mobile-actions{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.agrivox-footer{
+  background-color: var(--agri-surface-white);
+  border-top: 1px solid var(--agri-border);
+  padding: 40px 0;
+  margin-top: auto;
+  width: 100%;
+}
+
+.agrivox-footer-container{
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.agrivox-footer-brand{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.agrivox-footer-sub{
+  font-size: 14px;
+  color: var(--agri-text-muted);
+  font-weight: 500;
+}
+
+.agrivox-copyright{
+  font-size: 14px;
+  color: var(--agri-text-subtle);
+  font-weight: 500;
+}
+
+.agrivox-toast{
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background-color: var(--agri-surface-white);
+  border: 2px solid var(--agri-border-strong);
+  box-shadow: var(--agri-shadow-lg);
+  border-radius: 18px;
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  opacity: 0;
+  transform: translateY(-30px);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 300;
+  max-width: 400px;
+}
+
+.agrivox-toast-active{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.agrivox-toast-icon{
+  background-color: var(--agri-green-light);
+  color: var(--agri-green-primary);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.agrivox-toast-title{
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--agri-green-dark-text);
+  margin: 0;
+}
+
+.agrivox-toast-message{
+  font-size: 13px;
+  color: var(--agri-text-muted);
+  margin-top: 2px;
+}
+
+@media (max-width: 900px){
+  .agrivox-nav-menu, 
+  .agrivox-nav-actions{
+    display: none;
+  }
+
+  .agrivox-mobile-toggle{
+    display: block;
+  }
+
+  .agrivox-footer-container{
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+}
