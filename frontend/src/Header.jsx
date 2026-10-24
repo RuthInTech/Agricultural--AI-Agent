@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {Mic, Menu} from 'lucide-react';
 import Dashboard from './assets/Dashboard/Dashboard.jsx'
 
@@ -22,6 +23,13 @@ export default function Header({ currentLang, onVoiceClick }){
     const toggleDashboard = () => {
         setIsDashboardOpen(!isDahboardOpen);
     };
+
+    const navigate = useNavigate();
+
+    const handleNavigate = () => {
+        navigate('/Home')
+    };
+
     
     return(
         <header className="header-root">
@@ -32,11 +40,11 @@ export default function Header({ currentLang, onVoiceClick }){
                     </button>
                     <div className='brand-logo-group'>
                         <div className='brand-icon'>                    
-                            <SproutIcon/>
+                            <SproutIcon onClick={handleNavigate}/>
                         </div>
                         <div>
-                            <span className='brand-title'>AgriVox</span>
-                            <span className='brand-subtitle'>AGRI-INTELLIGENCE ECOSYSTEM</span>
+                            <span className='brand-title'>AgriGuide</span>
+                            <span className='brand-subtitle'>AI-Agricultural Extension Platform</span>
                         </div>
                     </div>
                 </div>
