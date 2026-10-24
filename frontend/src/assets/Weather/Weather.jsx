@@ -1,174 +1,207 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './Weather.css';
-import API from '../../api/axios.js';
-import { RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
+import { getWeather } from '../../api/weather';
+import { RefreshCw, MapPin, AlertCircle, CheckCircle2, Wind, Droplets, CloudRain } from 'lucide-react';
+
+const PRESET_LOCATIONS = [
+  { label: 'Addis Ababa', value: 'Addis Ababa' },
+  { label: 'Site A (Debre Zeit)', value: 'SITE-A' },
+  { label: 'Site B (Hawassa)', value: 'SITE-B' },
+  { label: 'Site C (Adama)', value: 'SITE-C' },
+  { label: 'Bahir Dar', value: 'Bahir Dar' },
+  { label: 'Jimma', value: 'Jimma' },
+];
 
 export default function Weather() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [statusMessage, setStatusMessage] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState('Addis Ababa');
+  const [searchInput, setSearchInput] = useState('');
   const [weatherData, setWeatherData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  const convertBackendWeather = (data) => {
-    if (!data) return null;
-    return {
-      location: data.location || "Addis Ababa",
-      current: {
-        temperature: data.current?.temperature || data.current?.temp || "24°C",
-        condition: data.current?.condition || "Partly cloudy",
-        icon: data.current?.icon || "⛅",
-        rainProbability: data.current?.rain_probability || data.current?.rainProbability || "70%",
-        humidity: data.current?.humidity || "65%",
-      },
-      advice: {
-        title: data.advice?.title || "Farming Advice",
-        alert: data.advice?.alert || "⚠️ Rain expected tomorrow.",
-        recommendation: data.advice?.recommendation || "Consider delaying fertilizer application until conditions improve.",
-      },
-      forecast: (data.forecast || []).map((day, index) => ({
-        id: day.id || `f${index + 1}`,
-        day: day.day || "Mon",
-        date: day.date || "Oct 8",
-        condition: day.condition || "Sunny",
-        icon: day.icon || "☀️",
-        tempHigh: day.temp_high || day.tempHigh || "25°C",
-        tempLow: day.temp_low || day.tempLow || "12°C",
-        rainChance: day.rain_chance || day.rainChance || "10%",
-      })),
-    };
-  };
-
-  useEffect(() => {
-    const loadWeather = async () => {
-      setIsLoading(true);
-      setStatusMessage(null);
-
-      try {
-        const response = await API.get('/weather/');
-        console.log('Weather data from backend:', response.data);
-
-        if (response.data) {
-          setWeatherData(convertBackendWeather(response.data));
-        }
-      } catch (err) {
-        console.error('Failed to load weather:', err.response?.data || err.message);
-        setStatusMessage({
-          type: 'error',
-          text: err.response?.data?.detail || 'Could not fetch live weather insights. Displaying local defaults.',
-        });
-
-        // Fallback mock data if backend endpoint is not yet active
-        setWeatherData({
-          location: "Addis Ababa",
-          current: {
-            temperature: "24°C",
-            condition: "Partly cloudy",
-            icon: "⛅",
-            rainProbability: "70%",
-            humidity: "65%",
-          },
-          advice: {
-            title: "Farming Advice",
-            alert: "⚠️ Rain expected tomorrow.",
-            recommendation: "Consider delaying fertilizer application until conditions improve.",
-          },
-          forecast: [
-            { id: "f1", day: "Mon", date: "Oct 8", condition: "Rainy", icon: "🌧️", tempHigh: "22°C", tempLow: "15°C", rainChance: "80%" },
-            { id: "f2", day: "Tue", date: "Oct 9", condition: "Sunny", icon: "☀️", tempHigh: "26°C", tempLow: "13°C", rainChance: "10%" },
-            { id: "f3", day: "Wed", date: "Oct 10", condition: "Cloudy", icon: "☁️", tempHigh: "23°C", tempLow: "14°C", rainChance: "30%" },
-            { id: "f4", day: "Thu", date: "Oct 11", condition: "Showers", icon: "🌦️", tempHigh: "21°C", tempLow: "15°C", rainChance: "60%" },
-            { id: "f5", day: "Fri", date: "Oct 12", condition: "Sunny", icon: "☀️", tempHigh: "25°C", tempLow: "12°C", rainChance: "0%" },
-            { id: "f6", day: "Sat", date: "Oct 13", condition: "Partly Cloudy", icon: "⛅", tempHigh: "24°C", tempLow: "14°C", rainChance: "20%" },
-            { id: "f7", day: "Sun", date: "Oct 14", condition: "Sunny", icon: "☀️", tempHigh: "27°C", tempLow: "13°C", rainChance: "5%" },
-          ],
-        });
-      } finally {
-        setIsLoading(false);
+  const fetchWeather = useCallback(async (loc) => {
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      const data = await getWeather(loc);
+      if (data && data.current) {
+        setWeatherData(data);
+      } else {
+        setErrorMessage(`Weather insights currently unavailable for '${loc}'. Please retry.`);
       }
-    };
-
-    loadWeather();
+    } catch (err) {
+      const detail = err.response?.data?.detail || 'Could not connect to live weather telemetry. Please check backend connection.';
+      setErrorMessage(detail);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const currentData = weatherData || {
-    location: "Addis Ababa",
-    current: { temperature: "24°C", condition: "Loading...", icon: "⛅", rainProbability: "0%", humidity: "0%" },
-    advice: { title: "Farming Advice", alert: "", recommendation: "" },
-    forecast: [],
+  useEffect(() => {
+    fetchWeather(selectedLocation);
+  }, [selectedLocation, fetchWeather]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (!searchInput.trim()) return;
+    setSelectedLocation(searchInput.trim());
+    setSearchInput('');
   };
 
-  const { location, current, advice, forecast } = currentData;
+  const handlePresetClick = (locValue) => {
+    setSelectedLocation(locValue);
+  };
+
+  const current = weatherData?.current;
+  const advice = weatherData?.advice;
+  const forecast = weatherData?.forecast || [];
 
   return (
     <div className="weather-container">
       <div className="weather-header">
-        <h1 className="main-title">Local Weather</h1>
-        <p className="sub-title">Real-time weather insights for {location}</p>
+        <div className="weather-header__text">
+          <h1>Agricultural Weather Intelligence</h1>
+          <p>Real-time telemetry and 7-day agronomic forecasts for Ethiopian farming hubs</p>
+        </div>
+
+        <div className="weather-controls">
+          <form onSubmit={handleSearchSubmit} className="weather-search-box">
+            <input
+              type="text"
+              placeholder="Search city/region..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+            <button type="submit">Search</button>
+          </form>
+
+          <button
+            type="button"
+            className="weather-refresh-btn"
+            onClick={() => fetchWeather(selectedLocation)}
+            disabled={isLoading}
+            title="Refresh weather data"
+          >
+            <RefreshCw size={16} className={isLoading ? 'spin' : ''} style={isLoading ? { animation: 'spin 1s linear infinite' } : {}} />
+            <span>{isLoading ? 'Updating...' : 'Refresh'}</span>
+          </button>
+        </div>
       </div>
 
-      {statusMessage && (
-        <div className={`status-toast ${statusMessage.type}`} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px', marginBottom: '20px', borderRadius: '12px', background: statusMessage.type === 'error' ? '#fef2f2' : '#f0fdf4', color: statusMessage.type === 'error' ? '#991b1b' : '#166534', border: `1px solid ${statusMessage.type === 'error' ? '#fecaca' : '#bbf7d0'}` }}>
-          {statusMessage.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
-          <span>{statusMessage.text}</span>
+      {/* Preset Location Chips */}
+      <div className="weather-presets">
+        {PRESET_LOCATIONS.map((preset) => (
+          <button
+            key={preset.value}
+            type="button"
+            className={`weather-preset-chip ${selectedLocation === preset.value ? 'is-active' : ''}`}
+            onClick={() => handlePresetClick(preset.value)}
+          >
+            {preset.label}
+          </button>
+        ))}
+      </div>
+
+      {errorMessage && (
+        <div className="status-toast error">
+          <AlertCircle size={18} />
+          <span>{errorMessage}</span>
+          <button
+            type="button"
+            onClick={() => fetchWeather(selectedLocation)}
+            style={{ marginLeft: 'auto', background: '#991b1b', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}
+          >
+            Retry
+          </button>
         </div>
       )}
 
-      {isLoading ? (
-        <div className="status-toast success" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '48px', background: '#ffffff', borderRadius: '16px', border: '1px solid #e0e0e0', marginBottom: '24px' }}>
-          <RefreshCw size={22} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
-          <span style={{ fontWeight: 600, color: '#1b4332' }}>Fetching live weather metrics...</span>
+      {isLoading && !weatherData ? (
+        <div style={{ background: '#fff', border: '1px solid #e2ede5', borderRadius: '18px', padding: '48px', textAlign: 'center', color: '#2d6a4f' }}>
+          <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+          <p style={{ fontWeight: 600 }}>Retrieving live weather telemetry & forecast...</p>
         </div>
-      ) : (
+      ) : weatherData && current ? (
         <>
+          {/* Hero Weather Card */}
           <div className="weather-hero-card">
-            <div className="hero-primary">
-              <div className="temp-display">
-                {current.icon} {current.temperature}
+            <div className="weather-hero__main">
+              <div className="weather-hero__location">
+                <MapPin size={22} />
+                <span>{weatherData.location}</span>
               </div>
-              <div className="condition-text">{current.condition}</div>
+
+              <div className="weather-hero__temp-group">
+                <span className="weather-hero__icon">{current.icon}</span>
+                <span className="weather-hero__temp">{current.temperature}</span>
+              </div>
+
+              <div className="weather-hero__condition">{current.condition}</div>
+              <div className="weather-hero__time">Updated: {current.updated_at}</div>
             </div>
 
-            <div className="hero-stats">
-              <div className="stat-group">
-                <span className="stat-label">🌧 Rain</span>
-                <span className="stat-value">{current.rainProbability}</span>
+            <div className="weather-hero__metrics">
+              <div className="metric-pill">
+                <span className="metric-pill__label" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <CloudRain size={14} /> Rain Probability
+                </span>
+                <span className="metric-pill__value">{current.rain_probability}</span>
               </div>
-              <div className="stat-group">
-                <span className="stat-label">💧 Humidity</span>
-                <span className="stat-value">{current.humidity}</span>
+
+              <div className="metric-pill">
+                <span className="metric-pill__label" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Droplets size={14} /> Humidity
+                </span>
+                <span className="metric-pill__value">{current.humidity}</span>
+              </div>
+
+              <div className="metric-pill">
+                <span className="metric-pill__label" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Wind size={14} /> Wind Speed
+                </span>
+                <span className="metric-pill__value">{current.wind_speed}</span>
+              </div>
+
+              <div className="metric-pill">
+                <span className="metric-pill__label">Country / Basin</span>
+                <span className="metric-pill__value" style={{ fontSize: '15px' }}>{weatherData.country}</span>
               </div>
             </div>
           </div>
 
-          <div className="advice-card">
-            <div className="advice-header">
-              <span style={{ fontSize: '22px' }}>🌾</span>
-              <h2 className="advice-title">{advice.title}</h2>
+          {/* Farming Advisory Card */}
+          {advice && (
+            <div className="weather-advice-card">
+              <div className="weather-advice__header">
+                <span style={{ fontSize: '20px' }}>🌾</span>
+                <h3>{advice.title}</h3>
+              </div>
+              <p className="weather-advice__alert">{advice.alert}</p>
+              <p className="weather-advice__rec">{advice.recommendation}</p>
             </div>
-            <p className="advice-alert">{advice.alert}</p>
-            <p className="advice-recommendation">{advice.recommendation}</p>
-          </div>
+          )}
 
+          {/* 7-Day Forecast Grid */}
           <div className="forecast-section">
-            <h2 className="forecast-title">7-Day Forecast</h2>
-            
+            <h2>7-Day Agricultural Forecast</h2>
             <div className="forecast-grid">
               {forecast.map((day) => (
                 <div key={day.id} className="forecast-card">
-                  <p className="forecast-day">{day.day}</p>
+                  <span className="forecast-day">{day.day}</span>
                   <span className="forecast-date">{day.date}</span>
                   <span className="forecast-icon">{day.icon}</span>
                   <span className="forecast-condition">{day.condition}</span>
                   <div className="forecast-temps">
-                    <span className="temp-high">{day.tempHigh}</span>
-                    <span className="temp-low">{day.tempLow}</span>
+                    <span className="forecast-temp-high">{day.temp_high}</span>
+                    <span className="forecast-temp-low">{day.temp_low}</span>
                   </div>
-                  <span className="forecast-rain">💧 {day.rainChance}</span>
+                  <span className="forecast-rain">💧 {day.rain_chance}</span>
                 </div>
               ))}
             </div>
           </div>
         </>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -223,12 +223,12 @@ export default function Register(){
                         <div className="agrivox-logo-icon">
                             <SproutIcon />
                         </div>
-                        <span className="agrivox-title">AgriVox</span>
+                        <span className="agrivox-title">AgriGuide</span>
                     </div>
 
                     <div className="login-title-group">
-                        <h2>Welcome To AgriVox!</h2>
-                        <p>Create an account:</p>
+                        <h2>Welcome To AgriGuide!</h2>
+                        <p>Create an extension agent account:</p>
                     </div>
 
                     {error && (
@@ -376,8 +376,8 @@ export default function Register(){
                 <div className="login-graphic-side">
                     <NetworkGraphic />
                     <div className="graphic-overlay-content">
-                        <span className="graphic-badge">AgriVox Intelligence</span>
-                        <h3>Voice-Driven Agricultural Insights</h3>
+                        <span className="graphic-badge">AgriGuide Intelligence</span>
+                        <h3>AI Agricultural Extension Agent</h3>
                     </div>
                 </div>
             </div>

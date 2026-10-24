@@ -105,8 +105,8 @@ export default function IntroPage(){
             </div>
 
             <div className="agrivox-brand-text">
-              <span className="agrivox-title">AgriVox</span>
-              <span className="agrivox-subtitle">AGRI-INTELLIGENCE ECOSYSTEM</span>
+              <span className="agrivox-title">AgriGuide</span>
+              <span className="agrivox-subtitle">AI AGRICULTURAL EXTENSION AGENT</span>
             </div>
           </a>
 
@@ -166,12 +166,12 @@ export default function IntroPage(){
           </h1>
 
           <p className="agrivox-hero-description">
-            AgriVox breaks digital and literacy barriers across rural food supply chains. We combine multi-lingual voice AI, real-time commodity pricing forecasts, and precision soil diagnostic models into an open, accessible agricultural network.
+            AgriGuide empowers farmers and agricultural extension workers with evidence-referenced AI advisories, live weather telemetry, and persistent crop health diagnostic records.
           </p>
 
           <div className="agrivox-cta-wrapper">
             <button className="agrivox-btn-hero-primary" onClick={handleNavigate}>
-              Launch AgriVox Platform <ArrowRightIcon />
+              Launch AgriGuide Platform <ArrowRightIcon />
             </button>
             <button className="agrivox-btn-hero-secondary" onClick={handleNavigate}>
               Listen to Amharic Voice Demo
@@ -251,7 +251,7 @@ export default function IntroPage(){
                   <span className="wave bar5"></span>
                 </div>
                 <div className="agrivox-voice-ai">
-                  <span className="agrivox-voice-label">AgriVox Voice Response:</span>
+                  <span className="agrivox-voice-label">AgriGuide Voice Response:</span>
                   <p className="agrivox-voice-response">"Today's White Teff is trading at 8,200 ETB/Quintal (+3.1%). Wheat is steady at 4,900 ETB."</p>
                 </div>
               </div>
