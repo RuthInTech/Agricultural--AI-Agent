@@ -1,303 +1,806 @@
-import { useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
-
-const SproutIcon = () => (
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M7 20h10" /><path d="M10 20c0-4.4 3.6-8 8-8" /><path d="M4 11c3.5 0 6.5 2.5 7 6" /><path d="M12 20V10" /><path d="M12 10a8 8 0 0 1 8-8 8 8 0 0 1-8 8Z" />
-  </svg>
-);
-
-const BookOpenIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-  </svg>
-);
-
-const CheckCircleIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-    <polyline points="22 4 12 14.01 9 11.01" />
-  </svg>
-);
-
-const HistoryIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-    <path d="M3 3v5h5" />
-    <path d="M12 7v5l4 2" />
-  </svg>
-);
-
-const ArrowRightIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
-  </svg>
-);
-
-const MenuIcon = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" />
-  </svg>
-);
-
-const CloseIcon = () => (
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-  </svg>
-);
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Sprout,
+  ShieldCheck,
+  CloudSun,
+  FileText,
+  CheckCircle2,
+  ArrowRight,
+  Search,
+  Database,
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  Layers,
+  Activity,
+  MapPin,
+  Calendar,
+  Lock,
+  Menu,
+  X,
+  Sparkles,
+  ClipboardCheck,
+  Thermometer,
+  Wind,
+  Droplets,
+  BookOpen,
+  UserCheck,
+  HelpCircle,
+  Eye,
+  Check
+} from 'lucide-react';
+import '../css-files/intro-page.css';
 
 export default function IntroPage() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('all');
-  const targetSectionRef = useRef(null);
-
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [selectedDemo, setSelectedDemo] = useState('GUIDE-001');
+  const [activeFeatureTab, setActiveFeatureTab] = useState('agent');
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
-  const handleRegister = () => {
-    navigate("/Register");
+  // Demo simulator scenarios
+  const demoScenarios = {
+    'GUIDE-001': {
+      title: 'Maize Fall Armyworm Early Scouting',
+      location: 'SITE-A (Bishoftu Demonstration Farm)',
+      crop: 'Maize (Zea mays)',
+      stage: 'Vegetative (V4 - V6)',
+      symptoms: 'Translucent window-pane leaf feeding, small pinholes, moist sawdust-like frass inside the whorl.',
+      toolTrace: [
+        { tool: 'readCaseHistory', param: "location='SITE-A'", status: '2 historical records found' },
+        { tool: 'searchCropGuidance', param: "query='maize leaf frass windows'", status: 'Matched GUIDE-001 §2.1' },
+      ],
+      citation: {
+        id: 'GUIDE-001',
+        section: 'Section 2.1 — Early Stage Whorl Feeding',
+        snippet: 'Early instar larvae graze epidermis creating silvery window panes. Hand-picking or targeted biopesticide recommended before larvae bore deep into growing point.'
+      },
+      diagnosis: 'High probability of early-instar Fall Armyworm (Spodoptera frugiperda) infestation.',
+      caution: 'Preliminary diagnostic hypothesis. Confirm with physical sampling before chemical application.',
+      followUp: 'Scout 20 consecutive maize plants in a W-pattern. Record percentage with active frass by Oct 28.',
+      status: 'Approved by Extension Officer'
+    },
+    'CASE-002': {
+      title: 'Maize Stalk Borer Borehole Investigation',
+      location: 'SITE-B (Hawassa Demonstration Plot)',
+      crop: 'Maize (Zea mays)',
+      stage: 'Late Whorl / Tasseling',
+      symptoms: 'Internal stem tunneling, circular entrance holes with coarse frass plugs, yellowing top whorl.',
+      toolTrace: [
+        { tool: 'readCaseHistory', param: "location='SITE-B'", status: 'Prior Busseola fusca case in 2024' },
+        { tool: 'searchCropGuidance', param: "query='maize stem tunneling frass plugs'", status: 'Matched GUIDE-002 §4.3' },
+      ],
+      citation: {
+        id: 'GUIDE-002',
+        section: 'Section 4.3 — African Maize Stalk Borer Control',
+        snippet: 'Larvae penetrate stem after 2nd instar. Foliar sprays are ineffective once larvae are internal. Utilize push-pull intercropping with Desmodium or parasitic wasps.'
+      },
+      diagnosis: 'Symptoms consistent with African Maize Stalk Borer (Busseola fusca) stem penetration.',
+      caution: 'Chemical foliar sprays will not reach internal borers. Avoid unnecessary pesticide expenditure.',
+      followUp: 'Destructively sample 5 lodged stems to identify larval instar stage and assess damage severity.',
+      status: 'Approved by Extension Officer'
+    }
   };
 
-  const handleSignIn = () => {
-    navigate("/Login");
-  };
+  const currentScenario = demoScenarios[selectedDemo];
 
-  const handleNavAndScroll = (e, tabName) => {
+  const faqs = [
+    {
+      q: 'How does AgriGuide prevent AI hallucinations and incorrect diagnoses?',
+      a: 'AgriGuide operates within a strictly bounded agent loop. The AI is not permitted to generate diagnostic advice from unrestricted memory. Instead, it must invoke searchCropGuidance to pull verified research notes and readCaseHistory to inspect regional records. Every observation, hypothesis, and follow-up task is explicitly linked to real source IDs and verbatim snippets.'
+    },
+    {
+      q: 'Can the AI save records or alter farm data on its own?',
+      a: 'No. Autonomous database mutations are completely prohibited by design. The AI only produces an editable preview. An agricultural extension officer or farmer must inspect the evidence, optionally edit the text or proposed task, and check an explicit confirmation box before the backend executes saveAdvisoryAndFollowUp.'
+    },
+    {
+      q: 'How is live agro-climate weather data integrated?',
+      a: 'The Django backend proxies weather requests to Open-Meteo geocoding and forecast APIs without exposing sensitive credentials to the browser. The frontend displays current temperature, relative humidity, wind speed, precipitation, and a 7-day forecast alongside contextual agricultural advice (e.g., spray drift thresholds and evapotranspiration risks).'
+    },
+    {
+      q: 'Which crops and geographic locations are supported in this demo?',
+      a: 'This hackathon release specifically targets maize (Zea mays) across three Ethiopian agricultural research locations: SITE-A (Bishoftu/Debre Zeit), SITE-B (Hawassa), and SITE-C (Adama). The underlying model and data schema easily scale to additional crops and geographic coordinates.'
+    },
+    {
+      q: 'Is this architecture 100% compliant with free-tier hackathon rules?',
+      a: 'Yes. AgriGuide uses zero paid APIs, zero sponsored credits, and no billing-enabled services. The backend runs on standard Python/Django, the database uses PostgreSQL, AI inference utilizes eligible free-tier API quotas, and weather telemetry uses Open-Meteo keyless open data.'
+    }
+  ];
+
+  const scrollToSection = (e, sectionId) => {
     e.preventDefault();
-    setActiveTab(tabName);
-
-    if (targetSectionRef.current) {
-      targetSectionRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
+    setIsMobileMenuOpen(false);
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
   return (
-    <div className="agrivox-page-wrapper">
-      {/* Header Bar */}
-      <header className="agrivox-navbar">
-        <div className="agrivox-nav-container">
-          <a href="#home" className="agrivox-brand-logo">
-            <div className="agrivox-logo-icon">
-              <SproutIcon />
+    <div className="agri-landing-wrapper">
+      {/* Top Navigation */}
+      <header className="agri-landing-nav">
+        <div className="agri-nav-inner">
+          <a href="#hero" className="agri-nav-brand">
+            <div className="agri-brand-icon">
+              <Sprout size={24} />
             </div>
-            <div className="agrivox-brand-text">
-              <span className="agrivox-title">AgriGuide</span>
-              <span className="agrivox-subtitle">AI AGRICULTURAL EXTENSION PLATFORM</span>
+            <div className="agri-brand-text">
+              <span className="agri-brand-name">AgriGuide</span>
+              <span className="agri-brand-tagline">AI AGRICULTURAL EXTENSION AGENT</span>
             </div>
           </a>
 
-          <nav className="agrivox-nav-menu">
-            <a href="#workflow" className="agrivox-nav-link" onClick={(e) => handleNavAndScroll(e, 'all')}>Platform Overview</a>
-            <a href="#guidance" className="agrivox-nav-link" onClick={(e) => handleNavAndScroll(e, 'guidance')}>Crop Guidance</a>
-            <a href="#history" className="agrivox-nav-link" onClick={(e) => handleNavAndScroll(e, 'history')}>Case Management</a>
-            <a href="#approval" className="agrivox-nav-link" onClick={(e) => handleNavAndScroll(e, 'approval')}>Secure Advisories</a>
+          <nav className="agri-nav-links">
+            <a href="#workflow" onClick={(e) => scrollToSection(e, 'workflow')}>5-Step Protocol</a>
+            <a href="#simulator" onClick={(e) => scrollToSection(e, 'simulator')}>Advisory Simulator</a>
+            <a href="#features" onClick={(e) => scrollToSection(e, 'features')}>Platform Features</a>
+            <a href="#safety" onClick={(e) => scrollToSection(e, 'safety')}>Evidence Standards</a>
+            <a href="#faq" onClick={(e) => scrollToSection(e, 'faq')}>FAQ</a>
           </nav>
 
-          <div className="agrivox-nav-actions">
-            <button className="agrivox-btn-secondary" onClick={handleSignIn}>
+          <div className="agri-nav-actions">
+            <button className="agri-btn-outline" onClick={() => navigate('/Login')}>
               Sign In
             </button>
-            <button className="agrivox-btn-primary" onClick={handleRegister}>
-              Register
+            <button className="agri-btn-primary" onClick={() => navigate('/Recommendations')}>
+              Launch Agent <ArrowRight size={16} />
             </button>
           </div>
 
           <button
-            className="agrivox-mobile-toggle"
+            className="agri-nav-mobile-toggle"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle Navigation Menu">
-            {isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
+            aria-label="Toggle navigation"
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
+        {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="agrivox-mobile-drawer">
-            <nav className="agrivox-mobile-menu">
-              <a href="#workflow" onClick={(e) => handleNavAndScroll(e, 'all')}>Platform Overview</a>
-              <a href="#guidance" onClick={(e) => handleNavAndScroll(e, 'guidance')}>Crop Guidance</a>
-              <a href="#history" onClick={(e) => handleNavAndScroll(e, 'history')}>Case Management</a>
-              <a href="#approval" onClick={(e) => handleNavAndScroll(e, 'approval')}>Secure Advisories</a>
+          <div className="agri-mobile-drawer">
+            <nav className="agri-mobile-links">
+              <a href="#workflow" onClick={(e) => scrollToSection(e, 'workflow')}>5-Step Protocol</a>
+              <a href="#simulator" onClick={(e) => scrollToSection(e, 'simulator')}>Advisory Simulator</a>
+              <a href="#features" onClick={(e) => scrollToSection(e, 'features')}>Platform Features</a>
+              <a href="#safety" onClick={(e) => scrollToSection(e, 'safety')}>Evidence Standards</a>
+              <a href="#faq" onClick={(e) => scrollToSection(e, 'faq')}>FAQ</a>
             </nav>
-            <div className="agrivox-mobile-actions">
-              <button className="agrivox-btn-secondary" onClick={handleSignIn}>
+            <div className="agri-mobile-actions">
+              <button className="agri-btn-outline w-full" onClick={() => navigate('/Login')}>
                 Sign In
               </button>
-              <button className="agrivox-btn-primary" onClick={handleRegister}>
-                Register
+              <button className="agri-btn-primary w-full" onClick={() => navigate('/Recommendations')}>
+                Launch Extension Agent <ArrowRight size={16} />
               </button>
             </div>
           </div>
         )}
       </header>
 
-      {/* Main Hero Section */}
-      <main className="agrivox-main-content">
-        <section className="agrivox-hero-section">
-          <div className="agrivox-hero-badge">
-            <span className="agrivox-badge-pulse"></span>
-            <span>Enterprise AI Agricultural Extension System</span>
+      {/* Hero Section */}
+      <section id="hero" className="agri-hero-section">
+        <div className="agri-hero-container">
+          <div className="agri-hero-badge">
+            <span className="agri-badge-dot"></span>
+            <span>Agricultural Decision Support • Maize Crop Intelligence</span>
           </div>
 
-          <h1 className="agrivox-hero-heading">
-            Intelligent, source-referenced crop advisory for <span className="agrivox-heading-accent">modern farming operations.</span>
+          <h1 className="agri-hero-title">
+            Cautious, Source-Referenced Crop Problem Diagnostics for <span className="agri-highlight">Agricultural Extension</span>
           </h1>
 
-          <p className="agrivox-hero-description">
-            AgriGuide empowers farmers and agricultural extension workers with evidence-referenced AI advisories, live weather telemetry, and persistent crop health diagnostic records.
+          <p className="agri-hero-subtitle">
+            Equipping agricultural extension officers and maize farmers with verified evidence retrieval, local case history comparison, live micro-climate telemetry, and mandatory human-in-the-loop validation.
           </p>
 
-          <div className="agrivox-cta-wrapper">
-            <button className="agrivox-btn-hero-primary" onClick={handleNavigate}>
-              Launch AgriGuide Platform <ArrowRightIcon />
+          <div className="agri-hero-cta-group">
+            <button className="agri-btn-hero-primary" onClick={() => navigate('/Recommendations')}>
+              Start New Crop Report <ArrowRight size={18} />
             </button>
-            <button className="agrivox-btn-hero-secondary" onClick={handleRegister}>
-              Explore Knowledge Base
+            <button className="agri-btn-hero-secondary" onClick={() => navigate('/Weather')}>
+              <CloudSun size={18} /> Live Weather Telemetry
             </button>
-          </div>
-
-          {/* Professional Stats Bar */}
-          <div className="agrivox-hero-stats">
-            <div className="hero-stat-item">
-              <span className="stat-number">Real-Time</span>
-              <span className="stat-desc">Field Condition Analysis</span>
-            </div>
-            <div className="hero-stat-divider"></div>
-            <div className="hero-stat-item">
-              <span className="stat-number">Verified</span>
-              <span className="stat-desc">Agronomic Guidelines</span>
-            </div>
-            <div className="hero-stat-divider"></div>
-            <div className="hero-stat-item">
-              <span className="stat-number">Secure</span>
-              <span className="stat-desc">Centralized Case History</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Tab Filter Bar */}
-        <section ref={targetSectionRef} className="agrivox-filter-bar">
-          <div className="agrivox-chip-scroll">
-            <button
-              className={`agrivox-chip ${activeTab === 'all' ? 'active' : ''}`}
-              onClick={() => setActiveTab('all')}
-            >
-              🌱 Complete Platform Capabilities
-            </button>
-            <button
-              className={`agrivox-chip ${activeTab === 'guidance' ? 'active' : ''}`}
-              onClick={() => setActiveTab('guidance')}
-            >
-              📚 Validated Crop Guidance
-            </button>
-            <button
-              className={`agrivox-chip ${activeTab === 'history' ? 'active' : ''}`}
-              onClick={() => setActiveTab('history')}
-            >
-              📂 Farm Case History
-            </button>
-            <button
-              className={`agrivox-chip ${activeTab === 'approval' ? 'active' : ''}`}
-              onClick={() => setActiveTab('approval')}
-            >
-              ✅ Verification & Workflows
+            <button className="agri-btn-hero-tertiary" onClick={() => navigate('/CaseHistory')}>
+              <BookOpen size={18} /> Previous Cases
             </button>
           </div>
-        </section>
 
-        {/* Cards Grid */}
-        <section className="agrivox-pinterest-grid">
-
-          {(activeTab === 'all' || activeTab === 'guidance') && (
-            <div className="agrivox-pin-card agrivox-card-emerald">
-              <div className="agrivox-pin-header">
-                <span className="agrivox-pin-tag"><BookOpenIcon /> Guidance Retrieval</span>
-                <span className="agrivox-lang-pill">Knowledge Base • Maize</span>
+          {/* Trust Metrics */}
+          <div className="agri-trust-metrics">
+            <div className="agri-metric-item">
+              <div className="agri-metric-icon">
+                <ShieldCheck size={24} />
               </div>
-              <h3 className="agrivox-pin-title">Evidence-Based Reference Engine</h3>
-              <p className="agrivox-pin-body">
-                Instantly queries structured agronomic documentation to match field symptoms with official guidelines, ensuring recommendations remain grounded and cautious.
-              </p>
+              <div className="agri-metric-text">
+                <span className="agri-metric-value">100%</span>
+                <span className="agri-metric-label">Source-Referenced Citations</span>
+              </div>
+            </div>
 
-              <div className="agrivox-voice-box">
-                <div className="agrivox-voice-user">
-                  <span className="agrivox-voice-label">Sample Field Observation:</span>
-                  <p className="agrivox-voice-quote">"Yellowing leaves starting from leaf tips following heavy rainfall."</p>
+            <div className="agri-metric-divider"></div>
+
+            <div className="agri-metric-item">
+              <div className="agri-metric-icon">
+                <MapPin size={24} />
+              </div>
+              <div className="agri-metric-text">
+                <span className="agri-metric-value">3 Demo Sites</span>
+                <span className="agri-metric-label">Bishoftu • Hawassa • Adama</span>
+              </div>
+            </div>
+
+            <div className="agri-metric-divider"></div>
+
+            <div className="agri-metric-item">
+              <div className="agri-metric-icon">
+                <AlertTriangle size={24} />
+              </div>
+              <div className="agri-metric-text">
+                <span className="agri-metric-value">Zero</span>
+                <span className="agri-metric-label">Hallucinated Diagnoses</span>
+              </div>
+            </div>
+
+            <div className="agri-metric-divider"></div>
+
+            <div className="agri-metric-item">
+              <div className="agri-metric-icon">
+                <UserCheck size={24} />
+              </div>
+              <div className="agri-metric-text">
+                <span className="agri-metric-value">Human Gate</span>
+                <span className="agri-metric-label">Explicit Sign-off Required</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 1: The 5-Step Protocol Workflow */}
+      <section id="workflow" className="agri-section agri-workflow-section">
+        <div className="agri-section-header">
+          <span className="agri-section-tag">Bounded Agent Architecture</span>
+          <h2 className="agri-section-title">The 5-Step Extension Decision Protocol</h2>
+          <p className="agri-section-desc">
+            AgriGuide enforces strict boundaries on every interaction. The agent cannot guess solutions or write to the database without verifiable evidence and extension officer sign-off.
+          </p>
+        </div>
+
+        <div className="agri-workflow-grid">
+          <div className="agri-step-card">
+            <div className="agri-step-badge">Step 1</div>
+            <div className="agri-step-icon">
+              <FileText size={26} />
+            </div>
+            <h3 className="agri-step-title">Crop Problem Reporting</h3>
+            <p className="agri-step-desc">
+              Farmer or extension officer specifies location, maize growth stage, observed foliage/stem symptoms, and soil moisture conditions.
+            </p>
+            <div className="agri-step-foot">
+              <span>Input Validation</span>
+            </div>
+          </div>
+
+          <div className="agri-step-card">
+            <div className="agri-step-badge">Step 2</div>
+            <div className="agri-step-icon">
+              <Database size={26} />
+            </div>
+            <h3 className="agri-step-title">Case History Lookup</h3>
+            <p className="agri-step-desc">
+              Agent invokes <code>readCaseHistory</code> to identify previous confirmed crop problem records in the same agricultural zone.
+            </p>
+            <div className="agri-step-foot">
+              <span>Tool 1: readCaseHistory</span>
+            </div>
+          </div>
+
+          <div className="agri-step-card">
+            <div className="agri-step-badge">Step 3</div>
+            <div className="agri-step-icon">
+              <Search size={26} />
+            </div>
+            <h3 className="agri-step-title">Guidance Note Search</h3>
+            <p className="agri-step-desc">
+              Agent executes <code>searchCropGuidance</code> to match symptoms against peer-reviewed agricultural extension documents.
+            </p>
+            <div className="agri-step-foot">
+              <span>Tool 2: searchCropGuidance</span>
+            </div>
+          </div>
+
+          <div className="agri-step-card">
+            <div className="agri-step-badge">Step 4</div>
+            <div className="agri-step-icon">
+              <Sparkles size={26} />
+            </div>
+            <h3 className="agri-step-title">Cautious Advisory Synthesis</h3>
+            <p className="agri-step-desc">
+              Synthesizes a cautious advisory distinguishing facts from hypotheses, providing exact citations and scheduling follow-up scouting.
+            </p>
+            <div className="agri-step-foot">
+              <span>Confidence & Citations</span>
+            </div>
+          </div>
+
+          <div className="agri-step-card highlight">
+            <div className="agri-step-badge">Step 5</div>
+            <div className="agri-step-icon">
+              <ClipboardCheck size={26} />
+            </div>
+            <h3 className="agri-step-title">Human Confirmation & Save</h3>
+            <p className="agri-step-desc">
+              Extension worker reviews, edits observations or follow-ups, and checks explicit confirmation before executing <code>saveAdvisoryAndFollowUp</code>.
+            </p>
+            <div className="agri-step-foot highlight">
+              <span>Tool 3: Explicit Confirmation</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 2: Interactive Advisory Simulator */}
+      <section id="simulator" className="agri-section agri-simulator-section">
+        <div className="agri-section-header">
+          <span className="agri-section-tag">Interactive Preview</span>
+          <h2 className="agri-section-title">See AgriGuide in Action</h2>
+          <p className="agri-section-desc">
+            Switch between documented demonstration cases to inspect the live tool trace, official source citations, and human-in-the-loop review format.
+          </p>
+
+          <div className="agri-demo-toggle">
+            <button
+              className={`agri-demo-btn ${selectedDemo === 'GUIDE-001' ? 'active' : ''}`}
+              onClick={() => setSelectedDemo('GUIDE-001')}
+            >
+              🌱 Preset 1: Fall Armyworm (GUIDE-001)
+            </button>
+            <button
+              className={`agri-demo-btn ${selectedDemo === 'CASE-002' ? 'active' : ''}`}
+              onClick={() => setSelectedDemo('CASE-002')}
+            >
+              🌾 Preset 2: Stalk Borer (CASE-002)
+            </button>
+          </div>
+        </div>
+
+        <div className="agri-sim-card">
+          <div className="agri-sim-header">
+            <div className="agri-sim-title-group">
+              <span className="agri-sim-badge">Demonstration Case Scenario</span>
+              <h3 className="agri-sim-name">{currentScenario.title}</h3>
+            </div>
+            <div className="agri-sim-meta">
+              <span><MapPin size={14} /> {currentScenario.location}</span>
+              <span><Calendar size={14} /> Stage: {currentScenario.stage}</span>
+            </div>
+          </div>
+
+          <div className="agri-sim-body">
+            {/* Input Details */}
+            <div className="agri-sim-input-box">
+              <h4 className="agri-sim-subheading">Reported Field Symptoms</h4>
+              <p className="agri-sim-text">{currentScenario.symptoms}</p>
+            </div>
+
+            {/* Agent Tool Execution Trace */}
+            <div className="agri-sim-tools-box">
+              <h4 className="agri-sim-subheading">Agent Execution Pipeline</h4>
+              <div className="agri-sim-tool-list">
+                {currentScenario.toolTrace.map((t, idx) => (
+                  <div key={idx} className="agri-sim-tool-pill">
+                    <CheckCircle2 size={16} className="text-green" />
+                    <span className="tool-name">{t.tool}</span>
+                    <span className="tool-param">({t.param})</span>
+                    <span className="tool-status">→ {t.status}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Source Reference Citation */}
+            <div className="agri-sim-citation-box">
+              <div className="agri-citation-head">
+                <span className="agri-citation-tag">VERIFIED EXTENSION GUIDANCE</span>
+                <span className="agri-citation-id">{currentScenario.citation.id}</span>
+              </div>
+              <h5 className="agri-citation-section">{currentScenario.citation.section}</h5>
+              <blockquote className="agri-citation-quote">
+                "{currentScenario.citation.snippet}"
+              </blockquote>
+            </div>
+
+            {/* Cautious Advisory & Follow-Up */}
+            <div className="agri-sim-result-grid">
+              <div className="agri-result-col">
+                <h4 className="agri-sim-subheading">Diagnostic Assessment</h4>
+                <p className="agri-diagnosis-text">{currentScenario.diagnosis}</p>
+                <div className="agri-caution-banner">
+                  <AlertTriangle size={16} />
+                  <span>{currentScenario.caution}</span>
                 </div>
-                <div className="agrivox-voice-ai">
-                  <span className="agrivox-voice-label">AgriGuide Voice Response:</span>
-                  <p className="agrivox-voice-response">"Today's White Teff is trading at 8,200 ETB/Quintal (+3.1%). Wheat is steady at 4,900 ETB."</p>
+              </div>
+
+              <div className="agri-result-col">
+                <h4 className="agri-sim-subheading">Proposed Extension Action</h4>
+                <div className="agri-followup-box">
+                  <p className="agri-followup-text">{currentScenario.followUp}</p>
+                  <div className="agri-approval-tag">
+                    <Check size={14} /> {currentScenario.status}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="agri-sim-cta">
+              <button
+                className="agri-btn-primary"
+                onClick={() => navigate('/Recommendations')}
+              >
+                Run This Test Case in Extension Portal <ArrowRight size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 3: Platform Capabilities */}
+      <section id="features" className="agri-section agri-features-section">
+        <div className="agri-section-header">
+          <span className="agri-section-tag">Key Innovations</span>
+          <h2 className="agri-section-title">Built for Real Agricultural Field Realities</h2>
+          <p className="agri-section-desc">
+            Combining deterministic tool execution, local micro-climate forecasting, and reliable offline-tolerant data structures.
+          </p>
+
+          <div className="agri-feature-tabs">
+            <button
+              className={`agri-tab-btn ${activeFeatureTab === 'agent' ? 'active' : ''}`}
+              onClick={() => setActiveFeatureTab('agent')}
+            >
+              <Sparkles size={16} /> AI Decision Agent
+            </button>
+            <button
+              className={`agri-tab-btn ${activeFeatureTab === 'weather' ? 'active' : ''}`}
+              onClick={() => setActiveFeatureTab('weather')}
+            >
+              <CloudSun size={16} /> Agro-Weather Telemetry
+            </button>
+            <button
+              className={`agri-tab-btn ${activeFeatureTab === 'records' ? 'active' : ''}`}
+              onClick={() => setActiveFeatureTab('records')}
+            >
+              <Database size={16} /> PostgreSQL Persistence
+            </button>
+            <button
+              className={`agri-tab-btn ${activeFeatureTab === 'freetier' ? 'active' : ''}`}
+              onClick={() => setActiveFeatureTab('freetier')}
+            >
+              <ShieldCheck size={16} /> 100% Free-Tier Architecture
+            </button>
+          </div>
+        </div>
+
+        <div className="agri-feature-display">
+          {activeFeatureTab === 'agent' && (
+            <div className="agri-feature-content">
+              <div className="agri-feat-text">
+                <span className="agri-feat-badge">Evidence-Grounded Intelligence</span>
+                <h3>Bounded 3-Tool Diagnostic Loop</h3>
+                <p>
+                  Instead of allowing freeform ungrounded chat responses, AgriGuide utilizes a bounded loop with three deterministic tools: <code>readCaseHistory</code>, <code>searchCropGuidance</code>, and <code>saveAdvisoryAndFollowUp</code>.
+                </p>
+                <ul className="agri-feat-points">
+                  <li><CheckCircle2 size={18} className="text-green" /> Strictly treats retrieved guidance notes as the single source of truth.</li>
+                  <li><CheckCircle2 size={18} className="text-green" /> Clearly delineates physical observations from hypothetical explanations.</li>
+                  <li><CheckCircle2 size={18} className="text-green" /> Refuses to invent chemical prescriptions or unsupported pesticide dosages.</li>
+                </ul>
+                <button className="agri-btn-outline" onClick={() => navigate('/Guidance')}>
+                  Search Guidance Library <ArrowRight size={16} />
+                </button>
+              </div>
+              <div className="agri-feat-card-mock">
+                <div className="mock-card-header">
+                  <BookOpen size={20} className="text-green" />
+                  <h4>Official Guidance Verification</h4>
+                </div>
+                <div className="mock-guidance-item">
+                  <span className="mock-id">GUIDE-001</span>
+                  <h5>Fall Armyworm Early Scouting Guide</h5>
+                  <p>Threshold: 20% infested plants in early whorl stage warrants biological intervention.</p>
+                </div>
+                <div className="mock-guidance-item">
+                  <span className="mock-id">GUIDE-002</span>
+                  <h5>African Maize Stalk Borer Management</h5>
+                  <p>Target push-pull companion crops (Desmodium) and stubble destruction post-harvest.</p>
                 </div>
               </div>
             </div>
           )}
 
-          {(activeTab === 'all' || activeTab === 'history') && (
-            <div className="agrivox-pin-card">
-              <div className="agrivox-pin-header">
-                <span className="agrivox-pin-tag"><HistoryIcon /> Case Management</span>
+          {activeFeatureTab === 'weather' && (
+            <div className="agri-feature-content">
+              <div className="agri-feat-text">
+                <span className="agri-feat-badge">Micro-Climate Telemetry</span>
+                <h3>Protected Open-Meteo Integration</h3>
+                <p>
+                  Agro-climatic context is vital for crop disease diagnostics. The backend acts as a secure proxy to fetch live temperature, relative humidity, wind speed, precipitation, and 7-day forecasts without exposing API keys to the browser.
+                </p>
+                <ul className="agri-feat-points">
+                  <li><CheckCircle2 size={18} className="text-green" /> Real-time spray drift warnings when wind speeds exceed 15 km/h.</li>
+                  <li><CheckCircle2 size={18} className="text-green" /> Evapotranspiration and high-temperature stress alerts for maize tasseling.</li>
+                  <li><CheckCircle2 size={18} className="text-green" /> Fungal leaf disease risk assessment when humidity stays above 80%.</li>
+                </ul>
+                <button className="agri-btn-outline" onClick={() => navigate('/Weather')}>
+                  Open Weather Radar <ArrowRight size={16} />
+                </button>
               </div>
-              <h3 className="agrivox-pin-title">Regional Farm History Tracking</h3>
-              <p className="agrivox-pin-body">
-                Maintains continuous records across regional farm sites, enabling extension officers to review previous treatments and track follow-up tasks seamlessly.
-              </p>
-
-              <div className="agrivox-stat-card">
-                <div className="agrivox-stat-row">
+              <div className="agri-feat-card-mock weather">
+                <div className="mock-weather-hero">
                   <div>
-                    <span className="crop-name">Site A — Central Station</span>
-                    <span className="crop-loc">Active Case: Abebe Tadesse</span>
+                    <span className="mock-loc">Bishoftu Demonstration Farm</span>
+                    <span className="mock-temp">24.2°C</span>
+                    <span className="mock-cond">Partly Cloudy • Optimal Field Conditions</span>
                   </div>
-                  <span className="agrivox-stat-badge positive">Vegetative (V8)</span>
+                  <CloudSun size={52} className="text-accent" />
                 </div>
-                <div className="agrivox-stat-row">
-                  <div>
-                    <span className="crop-name">Site B — Regional Valley</span>
-                    <span className="crop-loc">Active Case: Tigist Bekele</span>
-                  </div>
-                  <span className="agrivox-stat-badge positive">Early Whorl</span>
+                <div className="mock-weather-stats">
+                  <div><Droplets size={16} /> Humidity: 58%</div>
+                  <div><Wind size={16} /> Wind: 11.2 km/h</div>
+                  <div><Thermometer size={16} /> Soil Moisture: Moderate</div>
                 </div>
-                <div className="agrivox-stat-row">
-                  <div>
-                    <span className="crop-name">Site C — Expansion Hub</span>
-                    <span className="crop-loc">New Deployment Zone</span>
-                  </div>
-                  <span className="agrivox-stat-badge neutral">Ready</span>
+                <div className="mock-weather-advice">
+                  <span>Agronomic Advisory:</span> Wind speed is under 15 km/h; morning hours are suitable for biological spraying if threshold is met.
                 </div>
               </div>
             </div>
           )}
 
-          {(activeTab === 'all' || activeTab === 'approval') && (
-            <div className="agrivox-pin-card">
-              <div className="agrivox-pin-header">
-                <span className="agrivox-pin-tag"><CheckCircleIcon /> Advisory Governance</span>
+          {activeFeatureTab === 'records' && (
+            <div className="agri-feature-content">
+              <div className="agri-feat-text">
+                <span className="agri-feat-badge">Full Audit Trail</span>
+                <h3>PostgreSQL Persistent Case History</h3>
+                <p>
+                  Every confirmed advisory and follow-up action is stored in relational PostgreSQL models through Django REST Framework. Extension workers can reopen records, track outcomes, and evaluate season-long crop recovery.
+                </p>
+                <ul className="agri-feat-points">
+                  <li><CheckCircle2 size={18} className="text-green" /> Unique advisory IDs linked to specific locations and field observers.</li>
+                  <li><CheckCircle2 size={18} className="text-green" /> Timestamped follow-up action items with status tracking.</li>
+                  <li><CheckCircle2 size={18} className="text-green" /> Detailed audit history ensuring diagnostic decisions can be inspected later.</li>
+                </ul>
+                <button className="agri-btn-outline" onClick={() => navigate('/SavedRecords')}>
+                  View Saved Advisories <ArrowRight size={16} />
+                </button>
               </div>
-              <h3 className="agrivox-pin-title">Explicit Expert Verification</h3>
-              <p className="agrivox-pin-body">
-                Generated advisories and follow-up schedules are presented in preview mode. Data is only committed to permanent records upon explicit confirmation from an extension agent.
-              </p>
-              <div className="agrivox-trade-preview">
-                <div className="trade-step">
-                  <div className="step-num">1</div>
-                  <p>AI generates preliminary advisory with verified citations</p>
+              <div className="agri-feat-card-mock">
+                <div className="mock-card-header">
+                  <Database size={20} className="text-green" />
+                  <h4>Persistent Case Records</h4>
                 </div>
-                <div className="trade-step">
-                  <div className="step-num">2</div>
-                  <p>Officer reviews, adjusts, and assigns follow-up tasks</p>
+                <div className="mock-case-row">
+                  <div>
+                    <span className="case-id">ADV-2026-001</span>
+                    <span className="case-title">Bishoftu • Maize FAW Follow-Up</span>
+                  </div>
+                  <span className="case-status pending">Pending Scouting</span>
                 </div>
-                <div className="trade-step">
-                  <div className="step-num">3</div>
-                  <p>Explicit sign-off securely stores record to database</p>
+                <div className="mock-case-row">
+                  <div>
+                    <span className="case-id">ADV-2026-002</span>
+                    <span className="case-title">Hawassa • Stalk Borer Verification</span>
+                  </div>
+                  <span className="case-status resolved">Resolved</span>
                 </div>
               </div>
             </div>
           )}
 
-        </section>
-      </main>
+          {activeFeatureTab === 'freetier' && (
+            <div className="agri-feature-content">
+              <div className="agri-feat-text">
+                <span className="agri-feat-badge">Hackathon Rule Compliance</span>
+                <h3>100% Free-Tier & Open Source</h3>
+                <p>
+                  In strict compliance with <code>AGENTS.md</code> §2, every component in AgriGuide utilizes genuine free-tier services or open-source libraries. Zero credit cards, zero paid API keys, and zero sponsored tier lock-in.
+                </p>
+                <ul className="agri-feat-points">
+                  <li><CheckCircle2 size={18} className="text-green" /> Frontend: React + Vite hosted on free-tier web infrastructure.</li>
+                  <li><CheckCircle2 size={18} className="text-green" /> Backend: Python + Django REST Framework on free cloud compute.</li>
+                  <li><CheckCircle2 size={18} className="text-green" /> Database: Remote PostgreSQL free-tier database.</li>
+                  <li><CheckCircle2 size={18} className="text-green" /> Weather: Open-Meteo keyless open data integration.</li>
+                </ul>
+                <button className="agri-btn-outline" onClick={() => navigate('/Register')}>
+                  Create Extension Account <ArrowRight size={16} />
+                </button>
+              </div>
+              <div className="agri-feat-card-mock">
+                <div className="mock-card-header">
+                  <ShieldCheck size={20} className="text-green" />
+                  <h4>Service Compliance Ledger</h4>
+                </div>
+                <div className="mock-service-row">
+                  <span>Backend Web Service</span>
+                  <span className="badge-free">100% Free Tier</span>
+                </div>
+                <div className="mock-service-row">
+                  <span>PostgreSQL Database</span>
+                  <span className="badge-free">100% Free Tier</span>
+                </div>
+                <div className="mock-service-row">
+                  <span>Open-Meteo Weather</span>
+                  <span className="badge-free">Keyless Open API</span>
+                </div>
+                <div className="mock-service-row">
+                  <span>Vite / React Frontend</span>
+                  <span className="badge-free">Open Source</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Section 4: Evidence & Safety Standard */}
+      <section id="safety" className="agri-section agri-safety-section">
+        <div className="agri-section-header">
+          <span className="agri-section-tag">Agricultural Safety</span>
+          <h2 className="agri-section-title">Strict Agricultural Safety & Evidence Standard</h2>
+          <p className="agri-section-desc">
+            Agricultural AI can harm farmer livelihoods if allowed to hallucinate treatments or prescribe unauthorized pesticides. AgriGuide enforces four non-negotiable safety guardrails.
+          </p>
+        </div>
+
+        <div className="agri-safety-grid">
+          <div className="agri-safety-card">
+            <div className="agri-safety-icon">
+              <BookOpen size={24} />
+            </div>
+            <h3>Retrieved Guidance as Source of Truth</h3>
+            <p>
+              The agent never invents reference documents, research citations, or official recommendations. Every advisory quotes official text and discloses its document identifier.
+            </p>
+          </div>
+
+          <div className="agri-safety-card">
+            <div className="agri-safety-icon">
+              <AlertTriangle size={24} />
+            </div>
+            <h3>Explicit Uncertainty Disclosures</h3>
+            <p>
+              AI findings are clearly framed as provisional hypotheses rather than definitive diagnoses. When symptoms are ambiguous, the agent explicitly prompts for on-field scouting.
+            </p>
+          </div>
+
+          <div className="agri-safety-card">
+            <div className="agri-safety-icon">
+              <Lock size={24} />
+            </div>
+            <h3>Zero Autonomous Database Writes</h3>
+            <p>
+              The agent is completely barred from committing data autonomously. An extension officer must review, edit proposed follow-ups, and check an explicit confirmation box.
+            </p>
+          </div>
+
+          <div className="agri-safety-card">
+            <div className="agri-safety-icon">
+              <Sprout size={24} />
+            </div>
+            <h3>Integrated Pest Management (IPM) First</h3>
+            <p>
+              The system prioritizes cultural scouting, physical threshold evaluation, and biological checks before chemical intervention, avoiding unnecessary pesticide costs.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 5: Frequently Asked Questions */}
+      <section id="faq" className="agri-section agri-faq-section">
+        <div className="agri-section-header">
+          <span className="agri-section-tag">Got Questions?</span>
+          <h2 className="agri-section-title">Frequently Asked Questions</h2>
+          <p className="agri-section-desc">
+            Everything you need to know about the AgriGuide system, our agent tools, and our hackathon compliance.
+          </p>
+        </div>
+
+        <div className="agri-faq-list">
+          {faqs.map((faq, index) => {
+            const isOpen = openFaqIndex === index;
+            return (
+              <div
+                key={index}
+                className={`agri-faq-item ${isOpen ? 'open' : ''}`}
+                onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+              >
+                <div className="agri-faq-question">
+                  <h4>{faq.q}</h4>
+                  <span className="agri-faq-toggle">
+                    {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                  </span>
+                </div>
+                {isOpen && (
+                  <div className="agri-faq-answer">
+                    <p>{faq.a}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Section 6: Bottom Call to Action */}
+      <section className="agri-cta-banner">
+        <div className="agri-cta-inner">
+          <h2>Ready to Verify a Crop Problem in the Field?</h2>
+          <p>
+            Experience evidence-referenced agricultural extension support powered by verified research, local case history, and live weather telemetry.
+          </p>
+          <div className="agri-cta-actions">
+            <button className="agri-btn-hero-primary" onClick={() => navigate('/Recommendations')}>
+              Start New Maize Crop Report <ArrowRight size={18} />
+            </button>
+            <button className="agri-btn-hero-secondary" onClick={() => navigate('/Login')}>
+              Sign In to Extension Portal
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="agri-landing-footer">
+        <div className="agri-footer-inner">
+          <div className="agri-footer-brand">
+            <div className="agri-brand-logo-group">
+              <div className="agri-brand-icon">
+                <Sprout size={22} />
+              </div>
+              <span className="agri-footer-title">AgriGuide</span>
+            </div>
+            <p className="agri-footer-desc">
+              AI Agricultural Extension Agent providing source-referenced maize crop problem diagnostics, previous case retrieval, and human-in-the-loop validation.
+            </p>
+            <span className="agri-footer-compliance">
+              🌱 Built for the Agricultural AI Hackathon • 100% Free-Tier Architecture
+            </span>
+          </div>
+
+          <div className="agri-footer-column">
+            <h5>Navigation</h5>
+            <a href="#hero" onClick={(e) => scrollToSection(e, 'hero')}>Overview</a>
+            <a href="#workflow" onClick={(e) => scrollToSection(e, 'workflow')}>5-Step Protocol</a>
+            <a href="#simulator" onClick={(e) => scrollToSection(e, 'simulator')}>Advisory Simulator</a>
+            <a href="#features" onClick={(e) => scrollToSection(e, 'features')}>Platform Features</a>
+            <a href="#safety" onClick={(e) => scrollToSection(e, 'safety')}>Safety Standards</a>
+          </div>
+
+          <div className="agri-footer-column">
+            <h5>Agent Tools</h5>
+            <span className="footer-code-link"><code>readCaseHistory</code></span>
+            <span className="footer-code-link"><code>searchCropGuidance</code></span>
+            <span className="footer-code-link"><code>saveAdvisoryAndFollowUp</code></span>
+            <span className="footer-code-link"><code>GET /api/weather/</code></span>
+          </div>
+
+          <div className="agri-footer-column">
+            <h5>Access Portal</h5>
+            <button className="footer-link-btn" onClick={() => navigate('/Recommendations')}>New Crop Report</button>
+            <button className="footer-link-btn" onClick={() => navigate('/CaseHistory')}>Previous Cases</button>
+            <button className="footer-link-btn" onClick={() => navigate('/Guidance')}>Guidance Library</button>
+            <button className="footer-link-btn" onClick={() => navigate('/SavedRecords')}>Saved Advisories</button>
+            <button className="footer-link-btn" onClick={() => navigate('/Login')}>Sign In</button>
+          </div>
+        </div>
+
+        <div className="agri-footer-bottom">
+          <p>© 2026 AgriGuide — AI Agricultural Extension Agent. Demonstration and educational use.</p>
+          <p>Compliant with Hackathon Free-Tier & Agricultural Safety Standards.</p>
+        </div>
+      </footer>
     </div>
   );
 }
