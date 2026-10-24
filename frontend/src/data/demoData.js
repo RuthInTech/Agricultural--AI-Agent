@@ -36,6 +36,7 @@ export const caseHistories = [
     crop: "Maize",
     growth_stage: "Vegetative (V8)",
     recorded_facts: "Farmer reported yellow lower leaves following heavy rain. No insect frass observed.",
+    recent_field_conditions: "Heavy rain was reported before the yellowing appeared.",
     previous_follow_ups: [
       {
         date: "2026-10-10",
@@ -51,6 +52,7 @@ export const caseHistories = [
     crop: "Maize",
     growth_stage: "Early Whorl",
     recorded_facts: "Observed scattered ragged holes in central leaves during dry spell inspection.",
+    recent_field_conditions: "Dry spell conditions were reported during inspection.",
     previous_follow_ups: [
       {
         date: "2026-10-18",

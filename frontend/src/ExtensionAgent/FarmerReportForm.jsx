@@ -2,16 +2,16 @@ import { useState } from 'react';
 import './FarmerReportForm.css';
 import { demoLocations, caseHistories } from '../data/demoData';
 
-export default function FarmerReportForm({ onSubmitReport, isLoading }) {
-  const [selectedLocation, setSelectedLocation] = useState('SITE-A');
-  const [selectedCaseId, setSelectedCaseId] = useState('');
-  const [formData, setFormData] = useState({
+export default function FarmerReportForm({ onSubmitReport, onViewSaved, isLoading, initialData }) {
+  const [selectedLocation, setSelectedLocation] = useState(initialData?.locationId || 'SITE-A');
+  const [selectedCaseId, setSelectedCaseId] = useState(initialData?.caseId || '');
+  const [formData, setFormData] = useState(() => initialData || ({
     farmerName: '',
     crop: 'Maize',
     growthStage: '',
     symptoms: '',
     fieldConditions: '',
-  });
+  }));
 
   const [errors, setErrors] = useState({});
 
@@ -54,7 +54,7 @@ export default function FarmerReportForm({ onSubmitReport, isLoading }) {
         crop: matchedCase.crop,
         growthStage: matchedCase.growth_stage,
         symptoms: matchedCase.recorded_facts,
-        fieldConditions: 'Recent heavy rain observed in the field area.',
+        fieldConditions: matchedCase.recent_field_conditions,
       });
       setErrors({});
     }
@@ -69,7 +69,7 @@ export default function FarmerReportForm({ onSubmitReport, isLoading }) {
         crop: 'Maize',
         growthStage: 'Vegetative (V8)',
         symptoms: 'Yellow leaves observed across the lower canopy following heavy rain.',
-        fieldConditions: 'Heavy rain for 3 days on moist soil.',
+        fieldConditions: 'Heavy rain was reported before the yellowing appeared.',
       });
     } else if (type === 'holes') {
       setSelectedLocation('SITE-B');
@@ -79,7 +79,7 @@ export default function FarmerReportForm({ onSubmitReport, isLoading }) {
         crop: 'Maize',
         growthStage: 'Early Whorl',
         symptoms: 'Scattered ragged holes in central leaves with visible chewing marks.',
-        fieldConditions: 'Dry spell conditions with warm weather.',
+        fieldConditions: 'Dry spell conditions were reported during inspection.',
       });
     }
     setErrors({});
@@ -133,12 +133,17 @@ export default function FarmerReportForm({ onSubmitReport, isLoading }) {
     <div className="form-card">
       <h2 className="form-title">AgriGuide — AI Extension Agent</h2>
       <p className="form-subtitle">
-        Submit field conditions to retrieve guidance and generate a referenced advisory.
+        Submit a field report to match the local demo guidance and prepare a reviewable advisory.
       </p>
 
-      {/* Quick Test Presets for Judging */}
+      {onViewSaved && (
+        <button type="button" className="saved-records-link" onClick={onViewSaved}>
+          View saved cases
+        </button>
+      )}
+
       <div className="preset-container">
-        <span className="preset-label">Test Subjects:</span>
+        <span className="preset-label">Demo reports:</span>
         <div className="preset-buttons">
           <button type="button" className="preset-btn" onClick={() => handleQuickPreset('yellowing')}>
             GUIDE-001 (Yellow Leaves)
@@ -270,7 +275,7 @@ export default function FarmerReportForm({ onSubmitReport, isLoading }) {
         </div>
 
         <button type="submit" className="submit-btn" disabled={isLoading}>
-          {isLoading ? 'Agent Analyzing & Searching Guidance...' : 'Run Agent Workflow (Preview Advisory)'}
+          {isLoading ? 'Matching demo guidance…' : 'Prepare advisory'}
         </button>
       </form>
     </div>

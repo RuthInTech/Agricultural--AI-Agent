@@ -9,7 +9,7 @@ import MyFarm from "./assets/My-Farm/MyFarm.jsx";
 import Weather from "./assets/Weather/Weather.jsx";
 import MarketPlace from "./assets/Market-Place/MarketPlace.jsx";
 import Profile from "./assets/Profile/Profile.jsx";
-import FarmerReportForm from "./ExtensionAgent/FarmerReportForm.jsx";
+import ExtensionAgentWorkflow from "./ExtensionAgent/ExtensionAgentWorkflow.jsx";
 
 function MainLayout(){
   return(
@@ -33,7 +33,8 @@ function App() {
             <Route element={<MainLayout/>}>
               <Route path="/Home" element={<HomePage/>}/>
               <Route path="/MyFarm" element={<MyFarm/>}/>
-              <Route path="/Recommendations" element={<FarmerReportForm/>}/>
+              <Route path="/Recommendations" element={<ExtensionAgentWorkflow/>}/>
+              <Route path="/Advisories" element={<ExtensionAgentWorkflow/>}/>
               <Route path="/Weather" element={<Weather/>}/>
               <Route path="/MarketPlace" element={<MarketPlace/>}/>
               <Route path="/Profile" element={<Profile/>}/>
