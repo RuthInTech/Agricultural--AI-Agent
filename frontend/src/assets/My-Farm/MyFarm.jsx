@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import './MyFarm.css';
-import { useState } from 'react';
 import { Building2, MapPin, Ruler, Sprout, Mountain, Layers, Droplets, Save, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function MyFarm() {
@@ -227,7 +226,8 @@ export default function MyFarm() {
                   />
                 </div>
               </div>
-            </section>
+            </div>
+          </section>
 
             <section className="form-card">
               <div className="card-header">
