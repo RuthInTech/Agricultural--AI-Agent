@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Sprout,
+  Leaf,
+  Wheat,
   ShieldCheck,
   CloudSun,
   FileText,
@@ -12,8 +14,6 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronUp,
-  Layers,
-  Activity,
   MapPin,
   Calendar,
   Lock,
@@ -26,9 +26,7 @@ import {
   Droplets,
   BookOpen,
   UserCheck,
-  HelpCircle,
-  Eye,
-  Check
+  Check,
 } from 'lucide-react';
 import '../css-files/intro-page.css';
 
@@ -38,6 +36,65 @@ export default function IntroPage() {
   const [selectedDemo, setSelectedDemo] = useState('GUIDE-001');
   const [activeFeatureTab, setActiveFeatureTab] = useState('agent');
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Track scroll position to power the plant growth animation
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalHeight > 0) {
+        const current = window.scrollY;
+        const progress = Math.min(Math.max(current / totalHeight, 0), 1);
+        setScrollProgress(progress);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Compute current plant growth stage based on scroll depth
+  const getGrowthStage = (progress) => {
+    if (progress < 0.25) {
+      return {
+        stage: 'Seedling Sprout',
+        phase: 'Germination & Early Scouting',
+        icon: Sprout,
+        color: '#16a34a',
+      };
+    } else if (progress < 0.50) {
+      return {
+        stage: 'Vegetative Whorl',
+        phase: 'Leaf Canopy & Frass Check',
+        icon: Leaf,
+        color: '#15803d',
+      };
+    } else if (progress < 0.75) {
+      return {
+        stage: 'Tasseling Phase',
+        phase: 'Stalk Borer & Climate Watch',
+        icon: Wheat,
+        color: '#ca8a04',
+      };
+    } else {
+      return {
+        stage: 'Mature Harvest',
+        phase: 'Evidence-Verified Crop Yield',
+        icon: ShieldCheck,
+        color: '#059669',
+      };
+    }
+  };
+
+  const currentGrowthStage = getGrowthStage(scrollProgress);
+  const StageIcon = currentGrowthStage.icon;
+
+  // Strict Credential Guard:
+  // Every entry button on the landing page requires credentials before accessing the web app.
+  const handleRequireCredentials = (targetPath = '/Recommendations') => {
+    navigate('/Login', { state: { from: { pathname: targetPath } } });
+  };
 
   // Demo simulator scenarios
   const demoScenarios = {
@@ -119,6 +176,63 @@ export default function IntroPage() {
 
   return (
     <div className="agri-landing-wrapper">
+      {/* ------------------------------------------------------------------ */}
+      {/* Scroll-Following Plant Growth Indicator & Vine Animation */}
+      {/* ------------------------------------------------------------------ */}
+      <aside className="agri-plant-scroll-companion" aria-label="Plant Growth Scroll Indicator">
+        {/* Vertical Vine Rail */}
+        <div className="agri-vine-rail">
+          <div
+            className="agri-vine-progress"
+            style={{ height: `${Math.round(scrollProgress * 100)}%` }}
+          />
+          {/* Milestone Leaf Buds */}
+          <span className={`agri-vine-bud bud-1 ${scrollProgress >= 0.2 ? 'sprouted' : ''}`}>🌱</span>
+          <span className={`agri-vine-bud bud-2 ${scrollProgress >= 0.45 ? 'sprouted' : ''}`}>🌿</span>
+          <span className={`agri-vine-bud bud-3 ${scrollProgress >= 0.7 ? 'sprouted' : ''}`}>🌾</span>
+          <span className={`agri-vine-bud bud-4 ${scrollProgress >= 0.95 ? 'sprouted' : ''}`}>🌽</span>
+        </div>
+
+        {/* Dynamic Sprout Badge that tracks scroll */}
+        <div
+          className="agri-sprout-follower"
+          style={{
+            top: `calc(${scrollProgress * 80}% + 80px)`,
+            transform: `scale(${1 + scrollProgress * 0.15}) rotate(${scrollProgress * 16 - 8}deg)`,
+          }}
+        >
+          <div className="agri-sprout-badge" title="Plant growth stage progresses as you scroll through AgriGuide">
+            <div className="agri-sprout-avatar" style={{ backgroundColor: `${currentGrowthStage.color}18`, color: currentGrowthStage.color }}>
+              <StageIcon size={20} className="agri-sprout-glyph" />
+            </div>
+            <div className="agri-sprout-details">
+              <span className="agri-sprout-title">{currentGrowthStage.stage}</span>
+              <span className="agri-sprout-subtitle">{Math.round(scrollProgress * 100)}% Explored</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Floating Botanical Background Leaves (Parallax Drift) */}
+      <div className="agri-drifting-foliage" aria-hidden="true">
+        <div
+          className="agri-leaf leaf-1"
+          style={{ transform: `translateY(${scrollProgress * -70}px) rotate(${15 + scrollProgress * 35}deg)` }}
+        />
+        <div
+          className="agri-leaf leaf-2"
+          style={{ transform: `translateY(${scrollProgress * -110}px) rotate(${-20 + scrollProgress * 50}deg)` }}
+        />
+        <div
+          className="agri-leaf leaf-3"
+          style={{ transform: `translateY(${scrollProgress * -50}px) rotate(${35 - scrollProgress * 40}deg)` }}
+        />
+        <div
+          className="agri-leaf leaf-4"
+          style={{ transform: `translateY(${scrollProgress * -90}px) rotate(${-15 + scrollProgress * 45}deg)` }}
+        />
+      </div>
+
       {/* Top Navigation */}
       <header className="agri-landing-nav">
         <div className="agri-nav-inner">
@@ -142,9 +256,9 @@ export default function IntroPage() {
 
           <div className="agri-nav-actions">
             <button className="agri-btn-outline" onClick={() => navigate('/Login')}>
-              Sign In
+              <Lock size={15} /> Sign In
             </button>
-            <button className="agri-btn-primary" onClick={() => navigate('/Recommendations')}>
+            <button className="agri-btn-primary" onClick={() => handleRequireCredentials('/Recommendations')}>
               Launch Agent <ArrowRight size={16} />
             </button>
           </div>
@@ -170,9 +284,9 @@ export default function IntroPage() {
             </nav>
             <div className="agri-mobile-actions">
               <button className="agri-btn-outline w-full" onClick={() => navigate('/Login')}>
-                Sign In
+                <Lock size={15} /> Sign In with Credentials
               </button>
-              <button className="agri-btn-primary w-full" onClick={() => navigate('/Recommendations')}>
+              <button className="agri-btn-primary w-full" onClick={() => handleRequireCredentials('/Recommendations')}>
                 Launch Extension Agent <ArrowRight size={16} />
               </button>
             </div>
@@ -197,13 +311,13 @@ export default function IntroPage() {
           </p>
 
           <div className="agri-hero-cta-group">
-            <button className="agri-btn-hero-primary" onClick={() => navigate('/Recommendations')}>
+            <button className="agri-btn-hero-primary" onClick={() => handleRequireCredentials('/Recommendations')}>
               Start New Crop Report <ArrowRight size={18} />
             </button>
-            <button className="agri-btn-hero-secondary" onClick={() => navigate('/Weather')}>
+            <button className="agri-btn-hero-secondary" onClick={() => handleRequireCredentials('/Weather')}>
               <CloudSun size={18} /> Live Weather Telemetry
             </button>
-            <button className="agri-btn-hero-tertiary" onClick={() => navigate('/CaseHistory')}>
+            <button className="agri-btn-hero-tertiary" onClick={() => handleRequireCredentials('/CaseHistory')}>
               <BookOpen size={18} /> Previous Cases
             </button>
           </div>
@@ -438,9 +552,9 @@ export default function IntroPage() {
             <div className="agri-sim-cta">
               <button
                 className="agri-btn-primary"
-                onClick={() => navigate('/Recommendations')}
+                onClick={() => handleRequireCredentials('/Recommendations')}
               >
-                Run This Test Case in Extension Portal <ArrowRight size={16} />
+                <Lock size={15} /> Run This Test Case in Extension Portal <ArrowRight size={16} />
               </button>
             </div>
           </div>
@@ -498,8 +612,8 @@ export default function IntroPage() {
                   <li><CheckCircle2 size={18} className="text-green" /> Clearly delineates physical observations from hypothetical explanations.</li>
                   <li><CheckCircle2 size={18} className="text-green" /> Refuses to invent chemical prescriptions or unsupported pesticide dosages.</li>
                 </ul>
-                <button className="agri-btn-outline" onClick={() => navigate('/Guidance')}>
-                  Search Guidance Library <ArrowRight size={16} />
+                <button className="agri-btn-outline" onClick={() => handleRequireCredentials('/Guidance')}>
+                  <Lock size={15} /> Search Guidance Library <ArrowRight size={16} />
                 </button>
               </div>
               <div className="agri-feat-card-mock">
@@ -534,8 +648,8 @@ export default function IntroPage() {
                   <li><CheckCircle2 size={18} className="text-green" /> Evapotranspiration and high-temperature stress alerts for maize tasseling.</li>
                   <li><CheckCircle2 size={18} className="text-green" /> Fungal leaf disease risk assessment when humidity stays above 80%.</li>
                 </ul>
-                <button className="agri-btn-outline" onClick={() => navigate('/Weather')}>
-                  Open Weather Radar <ArrowRight size={16} />
+                <button className="agri-btn-outline" onClick={() => handleRequireCredentials('/Weather')}>
+                  <Lock size={15} /> Open Weather Radar <ArrowRight size={16} />
                 </button>
               </div>
               <div className="agri-feat-card-mock weather">
@@ -572,8 +686,8 @@ export default function IntroPage() {
                   <li><CheckCircle2 size={18} className="text-green" /> Timestamped follow-up action items with status tracking.</li>
                   <li><CheckCircle2 size={18} className="text-green" /> Detailed audit history ensuring diagnostic decisions can be inspected later.</li>
                 </ul>
-                <button className="agri-btn-outline" onClick={() => navigate('/SavedRecords')}>
-                  View Saved Advisories <ArrowRight size={16} />
+                <button className="agri-btn-outline" onClick={() => handleRequireCredentials('/SavedRecords')}>
+                  <Lock size={15} /> View Saved Advisories <ArrowRight size={16} />
                 </button>
               </div>
               <div className="agri-feat-card-mock">
@@ -741,11 +855,11 @@ export default function IntroPage() {
             Experience evidence-referenced agricultural extension support powered by verified research, local case history, and live weather telemetry.
           </p>
           <div className="agri-cta-actions">
-            <button className="agri-btn-hero-primary" onClick={() => navigate('/Recommendations')}>
-              Start New Maize Crop Report <ArrowRight size={18} />
+            <button className="agri-btn-hero-primary" onClick={() => handleRequireCredentials('/Recommendations')}>
+              <Lock size={16} /> Sign In &amp; Start Crop Report <ArrowRight size={18} />
             </button>
             <button className="agri-btn-hero-secondary" onClick={() => navigate('/Login')}>
-              Sign In to Extension Portal
+              Portal Credentials Sign In
             </button>
           </div>
         </div>
@@ -788,17 +902,27 @@ export default function IntroPage() {
 
           <div className="agri-footer-column">
             <h5>Access Portal</h5>
-            <button className="footer-link-btn" onClick={() => navigate('/Recommendations')}>New Crop Report</button>
-            <button className="footer-link-btn" onClick={() => navigate('/CaseHistory')}>Previous Cases</button>
-            <button className="footer-link-btn" onClick={() => navigate('/Guidance')}>Guidance Library</button>
-            <button className="footer-link-btn" onClick={() => navigate('/SavedRecords')}>Saved Advisories</button>
-            <button className="footer-link-btn" onClick={() => navigate('/Login')}>Sign In</button>
+            <button className="footer-link-btn" onClick={() => handleRequireCredentials('/Recommendations')}>
+              <Lock size={12} /> New Crop Report
+            </button>
+            <button className="footer-link-btn" onClick={() => handleRequireCredentials('/CaseHistory')}>
+              <Lock size={12} /> Previous Cases
+            </button>
+            <button className="footer-link-btn" onClick={() => handleRequireCredentials('/Guidance')}>
+              <Lock size={12} /> Guidance Library
+            </button>
+            <button className="footer-link-btn" onClick={() => handleRequireCredentials('/SavedRecords')}>
+              <Lock size={12} /> Saved Advisories
+            </button>
+            <button className="footer-link-btn" onClick={() => navigate('/Login')}>
+              <Lock size={12} /> Sign In
+            </button>
           </div>
         </div>
 
         <div className="agri-footer-bottom">
           <p>© 2026 AgriGuide — AI Agricultural Extension Agent. Demonstration and educational use.</p>
-          <p>Compliant with Hackathon Free-Tier & Agricultural Safety Standards.</p>
+          <p>Compliant with Hackathon Free-Tier &amp; Agricultural Safety Standards.</p>
         </div>
       </footer>
     </div>
