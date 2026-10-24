@@ -139,7 +139,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
-DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
+DATABASE_URL = os.environ.get("postgresql://postgres:5l2IwUKNQtLPDMro@db.qgvbkgfgfymzopzjfcru.supabase.co:5432/postgres", "").strip()
 
 if DATABASE_URL:
     DATABASES = {"default": _database_from_url(DATABASE_URL)}
