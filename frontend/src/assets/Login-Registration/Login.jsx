@@ -145,12 +145,13 @@ export default function Login() {
         password: formData.password,
       });
 
-      const { access, token, refresh } = response.data || {};
+      const { access, token, refresh, user } = response.data || {};
       const authToken = access || token;
       if (authToken) {
         localStorage.setItem('access_token', authToken);
         localStorage.setItem('token', authToken);
         if (refresh) localStorage.setItem('refresh_token', refresh);
+        if (user) localStorage.setItem('user', JSON.stringify(user));
         navigate('/Home');
       } else {
         setError('Login succeeded but no token was returned.');
@@ -196,7 +197,7 @@ export default function Login() {
 
           <div className="login-title-group">
             <h2>Welcome Back!</h2>
-            <p>Log in to your account.</p>
+            <p>Sign in to your extension agent account.</p>
           </div>
 
           {error && (
