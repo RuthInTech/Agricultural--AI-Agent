@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    allowedHosts: ['agricultural-ai-agent-1.onrender.com'],
+    // Allow every host so LAN/mobile/demo hosts are never blocked by Vite.
+    allowedHosts: true,
   },
 })
