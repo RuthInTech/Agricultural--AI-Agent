@@ -1,0 +1,346 @@
+/* AgriGuide AppShell Layout Styling */
+:root {
+  --ag-primary: #1b4332;
+  --ag-primary-light: #2d6a4f;
+  --ag-accent: #40916c;
+  --ag-accent-light: #52b788;
+  --ag-mint: #d8f3dc;
+  --ag-gold: #d4a373;
+  --ag-bg: #f8faf8;
+  --ag-surface: #ffffff;
+  --ag-text: #1b281f;
+  --ag-text-muted: #4b6354;
+  --ag-border: #e2ede5;
+  --ag-border-hover: #b7d5c2;
+  --ag-shadow-sm: 0 2px 8px rgba(27, 67, 50, 0.05);
+  --ag-shadow-md: 0 8px 24px rgba(27, 67, 50, 0.08);
+  --ag-radius: 14px;
+}
+
+.ag-shell {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--ag-bg);
+  color: var(--ag-text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Sidebar Styles */
+.ag-sidebar {
+  width: 270px;
+  background-color: var(--ag-surface);
+  border-right: 1px solid var(--ag-border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ag-sidebar__scrim {
+  display: none;
+}
+
+@media (max-width: 960px) {
+  .ag-sidebar {
+    transform: translateX(-100%);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .ag-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .ag-sidebar__scrim.is-visible {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 30, 20, 0.45);
+    backdrop-filter: blur(4px);
+    z-index: 99;
+  }
+}
+
+.ag-sidebar__brand {
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--ag-border);
+}
+
+.ag-brand__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--ag-primary), var(--ag-accent));
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(45, 106, 79, 0.25);
+  flex-shrink: 0;
+}
+
+.ag-brand__name {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--ag-primary);
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+}
+
+.ag-brand__tag {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ag-accent);
+  letter-spacing: 0.8px;
+}
+
+.ag-sidebar__close {
+  display: none;
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: var(--ag-text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+@media (max-width: 960px) {
+  .ag-sidebar__close {
+    display: flex;
+  }
+}
+
+.ag-sidebar__nav {
+  flex: 1;
+  padding: 20px 14px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ag-nav__label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ag-text-muted);
+  letter-spacing: 0.8px;
+  padding: 12px 12px 6px 12px;
+}
+
+.ag-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  color: var(--ag-text);
+  text-decoration: none;
+  font-size: 14.5px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.ag-nav__link:hover {
+  background-color: var(--ag-mint);
+  color: var(--ag-primary);
+}
+
+.ag-nav__link.is-active {
+  background-color: var(--ag-mint);
+  color: var(--ag-primary);
+  font-weight: 700;
+  box-shadow: inset 3px 0 0 var(--ag-primary);
+}
+
+.ag-nav__link svg {
+  color: var(--ag-accent);
+  transition: color 0.15s ease;
+}
+
+.ag-nav__link.is-active svg {
+  color: var(--ag-primary);
+}
+
+.ag-sidebar__footer {
+  padding: 16px 14px;
+  border-top: 1px solid var(--ag-border);
+  background-color: #fafcfb;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ag-usercard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--ag-surface);
+  border: 1px solid var(--ag-border);
+}
+
+.ag-usercard__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ag-mint);
+  color: var(--ag-primary);
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ag-usercard__meta {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ag-usercard__name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ag-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ag-usercard__role {
+  font-size: 11.5px;
+  color: var(--ag-text-muted);
+}
+
+.ag-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px;
+  border: 1px solid var(--ag-border);
+  background: var(--ag-surface);
+  border-radius: 8px;
+  color: #991b1b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ag-logout-btn:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+/* Main Area Styles */
+.ag-main {
+  flex: 1;
+  margin-left: 270px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+@media (max-width: 960px) {
+  .ag-main {
+    margin-left: 0;
+  }
+}
+
+.ag-topbar {
+  height: 70px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ag-border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.ag-topbar__menu {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--ag-primary);
+  cursor: pointer;
+  padding: 6px;
+}
+
+@media (max-width: 960px) {
+  .ag-topbar__menu {
+    display: inline-flex;
+  }
+}
+
+.ag-topbar__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ag-primary);
+}
+
+.ag-topbar__spacer {
+  flex: 1;
+}
+
+.ag-topbar__badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ag-pill--success {
+  background-color: var(--ag-mint);
+  color: var(--ag-primary);
+  border: 1px solid #b7e4c7;
+}
+
+.ag-pill--weather {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  text-decoration: none;
+}
+
+.ag-pill--weather:hover {
+  background-color: #dcfce7;
+}
+
+.ag-content {
+  flex: 1;
+  padding: 32px 28px 60px;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .ag-content {
+    padding: 20px 16px 40px;
+  }
+}

@@ -4,8 +4,12 @@ from .views import RegisterView, LoginView, MeView
 
 
 urlpatterns = [
-    path('register/', RegisterView.as_view(), name= 'register'),
-    path('login/', LoginView.as_view(), name= "login"),
-    path("me/", MeView.as_view(), name= "view"),
-    path("token/refresh/", TokenRefreshView.as_view(), name="refersh_view")
+    path('register/', RegisterView.as_view(), name='register'),
+    path('register', RegisterView.as_view()),
+    path('login/', LoginView.as_view(), name='login'),
+    path('login', LoginView.as_view()),
+    path("me/", MeView.as_view(), name="view"),
+    path("me", MeView.as_view()),
+    path("token/refresh/", TokenRefreshView.as_view(), name="refresh_view"),
+    path("token/refresh", TokenRefreshView.as_view()),
 ]
