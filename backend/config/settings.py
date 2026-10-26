@@ -182,7 +182,7 @@ def _database_from_url(url):
     }
 
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
+DATABASE_URL = os.environ.get("postgresql://agriguide_user:5l2IwUKNQtLPDMro@127.0.0.1:5432/agriguide_db", "").strip()
 
 if DATABASE_URL:
     DATABASES = {
