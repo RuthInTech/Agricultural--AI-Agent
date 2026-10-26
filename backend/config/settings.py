@@ -59,9 +59,20 @@ ALLOWED_HOSTS = _env_list(
     "localhost,127.0.0.1",
 )
 
+# Accept any Host header by default (Render service domains, LAN/mobile
+# testing, custom demo hosts). Set DJANGO_ALLOW_ALL_HOSTS=false to restrict
+# the backend to DJANGO_ALLOWED_HOSTS only.
+if _env_bool("DJANGO_ALLOW_ALL_HOSTS", default=True):
+    ALLOWED_HOSTS = ["*"]
+
 # --------------------------------------------------
 # CORS and CSRF settings
 # --------------------------------------------------
+
+# By default every browser origin may call the API, so the app is never
+# blocked by cross-origin checks. Set CORS_ALLOW_ALL_ORIGINS=false to restrict
+# callers to the CORS_ALLOWED_ORIGINS list below.
+CORS_ALLOW_ALL_ORIGINS = _env_bool("CORS_ALLOW_ALL_ORIGINS", default=True)
 
 CORS_ALLOWED_ORIGINS = _env_list(
     "CORS_ALLOWED_ORIGINS",
