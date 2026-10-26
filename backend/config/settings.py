@@ -9,80 +9,78 @@ from urllib.parse import urlparse, unquote
 
 from dotenv import load_dotenv
 
-def _database_from_url(url):
-    """Parse a DATABASE_URL into a Django DATABASES entry (PostgreSQL)."""
-    parsed = urlparse(url)
-    return {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": unquote(parsed.path.lstrip("/")),
-        "USER": unquote(parsed.username or ""),
-        "PASSWORD": unquote(parsed.password or ""),
-        "HOST": parsed.hostname or "",
-        "PORT": str(parsed.port or ""),
-        "CONN_MAX_AGE": 60,
-        "OPTIONS": {"sslmode": os.environ.get("PGSSLMODE", "prefer")},
-    }
 
-# Project paths
+# --------------------------------------------------
+# Project paths and environment variables
+# --------------------------------------------------
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load backend/.env if it exists.
+# Load backend/.env for local development.
 load_dotenv(BASE_DIR / ".env")
 
 
 def _env_bool(name, default=False):
+    """Read an environment variable as a boolean."""
     value = os.environ.get(name)
+
     if value is None:
         return default
+
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _env_list(name, default=""):
+    """Read comma-separated environment values into a list."""
     raw = os.environ.get(name, default)
     return [item.strip() for item in raw.split(",") if item.strip()]
 
 
+# --------------------------------------------------
 # Security settings
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
-if not SECRET_KEY:
-    SECRET_KEY = (
-        "django-insecure-local-development-only-change-this-key"
-    )
+# --------------------------------------------------
 
-DEBUG = _env_bool("DJANGO_DEBUG", default=True)
+# Production must provide DJANGO_SECRET_KEY.
+# The fallback is only for local development.
+DEBUG = _env_bool("DJANGO_DEBUG", default=False)
+
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "").strip()
+
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = "django-insecure-local-development-only-change-this"
+    else:
+        raise RuntimeError(
+            "DJANGO_SECRET_KEY must be configured when DEBUG is False."
+        )
 
 ALLOWED_HOSTS = _env_list(
     "DJANGO_ALLOWED_HOSTS",
-    "localhost,127.0.0.1,testserver",
+    "localhost,127.0.0.1",
 )
-if "testserver" not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append("testserver")
 
-# CORS settings
+# --------------------------------------------------
+# CORS and CSRF settings
+# --------------------------------------------------
+
 CORS_ALLOWED_ORIGINS = _env_list(
     "CORS_ALLOWED_ORIGINS",
     (
         "http://localhost:5173,"
         "http://127.0.0.1:5173,"
         "http://localhost:5174,"
-        "http://127.0.0.1:5174"
+        "http://127.0.0.1:5174,"
+        "http://localhost:5175,"
+        "http://127.0.0.1:5175"
     ),
 )
 
-if DEBUG:
-    for origin in (
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
-        "http://localhost:5175",
-        "http://127.0.0.1:5175",
-    ):
-        if origin not in CORS_ALLOWED_ORIGINS:
-            CORS_ALLOWED_ORIGINS.append(origin)
+CSRF_TRUSTED_ORIGINS = _env_list("CSRF_TRUSTED_ORIGINS")
 
-
+# --------------------------------------------------
 # Application definition
+# --------------------------------------------------
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -99,16 +97,18 @@ INSTALLED_APPS = [
     "agent",
 ]
 
+AUTH_USER_MODEL = "users.User"
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
 
-AUTH_USER_MODEL = "users.User"
-
-
+# --------------------------------------------------
 # Middleware
+# --------------------------------------------------
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -139,23 +139,61 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
+# --------------------------------------------------
 # Database
-DATABASE_URL = os.environ.get("postgresql://postgres:5l2IwUKNQtLPDMro@db.qgvbkgfgfymzopzjfcru.supabase.co:5432/postgres", "").strip()
+# --------------------------------------------------
+
+def _database_from_url(url):
+    """Convert a PostgreSQL DATABASE_URL into Django settings."""
+    parsed = urlparse(url)
+
+    if parsed.scheme not in {"postgres", "postgresql"}:
+        raise ValueError(
+            "DATABASE_URL must use postgres:// or postgresql://."
+        )
+
+    database_name = unquote(parsed.path.lstrip("/"))
+
+    if not database_name or not parsed.hostname:
+        raise ValueError("DATABASE_URL is missing database details.")
+
+    return {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": database_name,
+        "USER": unquote(parsed.username or ""),
+        "PASSWORD": unquote(parsed.password or ""),
+        "HOST": parsed.hostname,
+        "PORT": str(parsed.port or 5432),
+        "CONN_MAX_AGE": 60,
+        "OPTIONS": {
+            "sslmode": os.environ.get("PGSSLMODE", "require"),
+        },
+    }
+
+
+DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
 
 if DATABASE_URL:
-    DATABASES = {"default": _database_from_url(DATABASE_URL)}
-else:
-    # Local development fallback.
+    DATABASES = {
+        "default": _database_from_url(DATABASE_URL),
+    }
+elif DEBUG:
+    # SQLite fallback for local development only.
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+else:
+    raise RuntimeError(
+        "DATABASE_URL must be configured in production."
+    )
 
-
+# --------------------------------------------------
 # Password validation
+# --------------------------------------------------
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": (
@@ -183,29 +221,35 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+# --------------------------------------------------
 # Internationalization
+# --------------------------------------------------
+
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-
+# --------------------------------------------------
 # Static files
+# --------------------------------------------------
+
 STATIC_URL = "static/"
 
-
+# --------------------------------------------------
 # Email
-MAILERS = {
-    "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
-    },
-}
+# --------------------------------------------------
 
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+# --------------------------------------------------
 # URL behavior
+# --------------------------------------------------
+
 APPEND_SLASH = False
 
-
+# --------------------------------------------------
 # Default primary key type
+# --------------------------------------------------
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
