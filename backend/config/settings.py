@@ -69,9 +69,15 @@ ALLOWED_HOSTS = _env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
 # CORS: read the env value (backend/.env) and, while DEBUG, always allow the
 # standard Vite dev-server ports so local development works regardless of the
 # exact port the dev server binds to. Production uses only the env list.
+# CORS: allow the Vite development server origins.
 CORS_ALLOWED_ORIGINS = _env_list(
     "CORS_ALLOWED_ORIGINS",
-    "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174",
+    "http://localhost:5173,"
+    "http://127.0.0.1:5173,"
+    "http://localhost:5174,"
+    "http://127.0.0.1:5174,"
+    "http://localhost:5175,"
+    "http://127.0.0.1:5175",
 )
 
 if DEBUG:
@@ -80,6 +86,8 @@ if DEBUG:
         "http://127.0.0.1:5173",
         "http://localhost:5174",
         "http://127.0.0.1:5174",
+        "http://localhost:5175",
+        "http://127.0.0.1:5175",
     ):
         if _origin not in CORS_ALLOWED_ORIGINS:
             CORS_ALLOWED_ORIGINS.append(_origin)
