@@ -10,14 +10,17 @@ from urllib.parse import urlparse, unquote
 from dotenv import load_dotenv
 
 
-# Project paths
+# ============================================================
+# Project paths and environment
+# ============================================================
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load backend/.env if it exists.
+# Load backend/.env for local development.
+# Deployment platforms should supply environment variables directly.
 load_dotenv(BASE_DIR / ".env")
 
 
-# Environment helpers
 def _env_bool(name, default=False):
     value = os.environ.get(name)
 
@@ -32,35 +35,10 @@ def _env_list(name, default=""):
     return [item.strip() for item in raw.split(",") if item.strip()]
 
 
-def _database_from_url(url):
-    """Parse a PostgreSQL DATABASE_URL into Django settings."""
-    parsed = urlparse(url)
-
-    if parsed.scheme not in {"postgres", "postgresql"}:
-        raise ValueError(
-            "DATABASE_URL must be a PostgreSQL connection URL."
-        )
-
-    if not parsed.path or parsed.path == "/":
-        raise ValueError(
-            "DATABASE_URL must include a database name."
-        )
-
-    return {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": unquote(parsed.path.lstrip("/")),
-        "USER": unquote(parsed.username or ""),
-        "PASSWORD": unquote(parsed.password or ""),
-        "HOST": parsed.hostname or "",
-        "PORT": str(parsed.port or 5432),
-        "CONN_MAX_AGE": 60,
-        "OPTIONS": {
-            "sslmode": os.environ.get("PGSSLMODE", "require"),
-        },
-    }
-
-
+# ============================================================
 # Security settings
+# ============================================================
+
 DEBUG = _env_bool("DJANGO_DEBUG", default=False)
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "").strip()
@@ -85,7 +63,10 @@ if "testserver" not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append("testserver")
 
 
+# ============================================================
 # CORS settings
+# ============================================================
+
 CORS_ALLOWED_ORIGINS = _env_list(
     "CORS_ALLOWED_ORIGINS",
     (
@@ -107,7 +88,10 @@ if DEBUG:
             CORS_ALLOWED_ORIGINS.append(origin)
 
 
+# ============================================================
 # Application definition
+# ============================================================
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -135,7 +119,10 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = "users.User"
 
 
+# ============================================================
 # Middleware
+# ============================================================
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -170,24 +157,62 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 
-# Database
+# ============================================================
+# Database configuration
+# ============================================================
+
+def _database_from_url(url):
+    """Parse a PostgreSQL DATABASE_URL for Django."""
+    parsed = urlparse(url)
+
+    if parsed.scheme not in {"postgres", "postgresql"}:
+        raise ValueError(
+            "DATABASE_URL must be a PostgreSQL connection URL."
+        )
+
+    if not parsed.hostname or not parsed.path.strip("/"):
+        raise ValueError(
+            "DATABASE_URL must include a host and database name."
+        )
+
+    return {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": unquote(parsed.path.lstrip("/")),
+        "USER": unquote(parsed.username or ""),
+        "PASSWORD": unquote(parsed.password or ""),
+        "HOST": parsed.hostname,
+        "PORT": str(parsed.port or 5432),
+        "CONN_MAX_AGE": 60,
+        "OPTIONS": {
+            "sslmode": os.environ.get("PGSSLMODE", "require"),
+        },
+    }
+
+
 DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
 
 if DATABASE_URL:
     DATABASES = {
-        "default": _database_from_url(DATABASE_URL)
+        "default": _database_from_url(DATABASE_URL),
     }
-else:
-    # Local development fallback.
+elif DEBUG:
+    # SQLite is used only for local development.
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
-        }
+        },
     }
+else:
+    raise RuntimeError(
+        "DATABASE_URL must be configured in production."
+    )
 
 
+# ============================================================
 # Password validation
+# ============================================================
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": (
@@ -210,40 +235,54 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": (
             "django.contrib.auth.password_validation."
-            "CommonPasswordValidator"
-        ),
-    },
-    {
-        "NAME": (
-            "django.contrib.auth.password_validation."
             "NumericPasswordValidator"
         ),
     },
 ]
 
 
+# ============================================================
 # Internationalization
+# ============================================================
+
 LANGUAGE_CODE = "en-us"
+
 TIME_ZONE = "UTC"
+
 USE_I18N = True
+
 USE_TZ = True
 
 
+# ============================================================
 # Static files
-STATIC_URL = "static/"
+# ============================================================
+
+STATIC_URL = "/static/"
 
 
+# ============================================================
 # Email
+# ============================================================
+
 MAILERS = {
     "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
+        "BACKEND": (
+            "django.core.mail.backends.console.EmailBackend"
+        ),
     },
 }
 
 
+# ============================================================
 # URL behavior
+# ============================================================
+
 APPEND_SLASH = False
 
 
-# Default primary key type
+# ============================================================
+# Default primary key
+# ============================================================
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
