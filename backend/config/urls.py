@@ -14,8 +14,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
+from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,4 +25,13 @@ urlpatterns = [
     path('api/', include("farms.urls")),
     path('api/', include("agent.urls")),
     path('api/', include("weather_api.urls")),
+    # Browsers and monitors request /favicon.ico from this origin before any
+    # HTML exists (the API serves JSON, not pages). Serve the same sprout icon
+    # the React frontend ships, from backend/static/favicon.ico. One extra
+    # root-level route: it cannot match any of the API paths above.
+    path(
+        "favicon.ico",
+        serve,
+        {"path": "favicon.ico", "document_root": settings.BASE_DIR / "static"},
+    ),
 ]
